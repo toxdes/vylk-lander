@@ -1,0 +1,39 @@
+.docs-main h4 { margin: 24px 0 12px; font-size: 16px; }
+.docs-main h3 { font-size: 22px; }
+.command-list { display: grid; gap: 10px; margin: 22px 0; }
+.command-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 16px; border-radius: 6px; background: #1b1d1e; }
+.command-row code { color: #fff; font: 12px/1.7 "JetBrains Mono", monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy-button { align-self: start; padding: 9px 12px; border: 1px solid #747c78; border-radius: 4px; background: #252928; color: #fff; cursor: pointer; font: 500 12px Rubik, sans-serif; }
+.copy-button:hover { background: #871d39; }
+.copy-button:focus-visible { outline: 3px solid #ae2448; outline-offset: 3px; }
+.copy-button.copied { background: #dce9d5; color: #315a32; }
+.docs-main details { padding: 18px 0; margin-bottom: 20px; border-block: 1px solid #cfd3d1; }
+.docs-main summary { cursor: pointer; color: #ae2448; font-weight: 500; }
+.docs-main details[open] summary { margin-bottom: 16px; }
+.download-links { display: flex; flex-wrap: wrap; gap: 16px; }
+.docs-main .os-panel,
+.docs-main [data-linux-panel],
+.docs-main [data-windows-panel],
+.docs-main [data-macos-panel] { display: none; }
+.docs-main .os-panel.active,
+.docs-main [data-linux-panel].active,
+.docs-main [data-windows-panel].active,
+.docs-main [data-macos-panel].active { display: block; }
+.docs-os-tabs { display: flex; gap: 0; margin: 28px 0 30px; border-bottom: 1px solid #cfd3d1; }
+.docs-os-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 10px 18px; min-height: 44px; background: transparent; color: #62676a; font: 500 14px Rubik, sans-serif; cursor: pointer; }
+.docs-os-tabs button.active { border-bottom-color: #ae2448; color: #151719; }
+.docs-os-tabs button:hover { color: #ae2448; }
+.docs-os-tabs button:focus-visible,
+.docs-main .method-tabs button:focus-visible { outline: 2px solid #ae2448; outline-offset: 4px; }
+.docs-main .method-tabs { display: flex; flex-wrap: wrap; gap: 0 20px; margin: 0 0 24px; border-bottom: 1px solid #cfd3d1; }
+.docs-main .method-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 9px 0; min-height: 44px; background: transparent; color: #62676a; font: 400 14px Rubik, sans-serif; cursor: pointer; }
+.docs-main .method-tabs button.active { border-bottom-color: #ae2448; color: #ae2448; font-weight: 500; }
+.docs-main .method-tabs button:hover { color: #ae2448; }
+.update-note { padding-top: 14px; border-top: 1px solid #cfd3d1; }
+.update-note b { color: #151719; }
+@media (max-width: 560px) {
+  .docs-nav nav { display: none; }
+  .docs-nav nav a:nth-child(3) { display: block; }
+  .docs-os-tabs button { flex: 1; padding-inline: 8px; }
+  .docs-main .method-tabs { gap: 0 14px; }
+}

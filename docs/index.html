@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VYLK documentation for installing, configuring, protecting, and using a self-hosted Markdown notes app.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#f4f5f3">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="VYLK docs - Install and configure VYLK">
+  <meta property="og:description" content="Install, configure, and run VYLK, a lightweight self-hosted Markdown editor with offline-first notes.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="VYLK docs - Install and configure VYLK">
+  <meta name="twitter:description" content="Install, configure, and run VYLK, a lightweight self-hosted Markdown editor with offline-first notes.">
+  <title>VYLK docs - Install and configure VYLK</title>
+  <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <header class="docs-nav">
+    <a class="brand" href="../index.html"><img src="../assets/vylk-logo.webp" alt="" width="29" height="29"><span>VYLK</span></a>
+      <nav aria-label="Documentation navigation"><a href="../index.html">Home</a><a class="active" aria-current="page" href="#top">Docs</a><a href="https://github.com/toxdes/vylk">Source</a></nav>
+  </header>
+
+  <div class="docs-shell" id="top">
+    <aside class="toc" aria-label="Documentation sections">
+      <p>VYLK docs</p>
+      <a href="#start">Start here</a><a href="#install">Install</a><a href="#remote">Other devices</a><a href="#config">Configuration</a><a href="#features">Features</a><a href="#security">Encryption and safety</a><a href="#offline">Offline use</a><a href="#build">Build and test</a>
+    </aside>
+
+    <main class="docs-main">
+      <section class="docs-hero">
+        <p class="path" aria-label="Breadcrumb"><a href="../index.html">VYLK</a><span aria-hidden="true"> / </span><span>Docs</span></p>
+        <h1>A small notebook<br>you can run yourself.</h1>
+        <p>VYLK is a lightweight Markdown editor with live preview, simple file storage, optional encryption, and offline-first notes. This guide covers the first run, daily use, and deployment.</p>
+      </section>
+
+      <section id="start">
+        <h2>Start here</h2>
+        <p>VYLK runs on a computer you control and opens in a browser. Linux packages are the easiest installation. Docker is convenient for a server, while the standalone binary and source build work when you want a smaller or more manual setup.</p>
+        <p><a href="../index.html#install">Choose an installation method</a>, start VYLK, then open <a href="http://localhost:8080">localhost:8080</a>. Sign in with the password you configured.</p>
+        <p>By default, Markdown notes are stored in <b>./notes</b> and the SQLite database is <b>./vylk.db</b>, relative to the directory where VYLK starts. Keep the process running while you use the app.</p>
+      </section>
+
+      <section id="install">
+        <h2>Install VYLK</h2>
+        <p>Pick your computer, then choose the simplest way to install it. Each panel also shows the short update path for that method.</p>
+        <div class="os-tabs docs-os-tabs" role="tablist" aria-label="Your operating system">
+          <button type="button" class="active" data-os-tab="linux" role="tab" aria-selected="true">Linux</button>
+          <button type="button" data-os-tab="windows" role="tab" aria-selected="false">Windows</button>
+          <button type="button" data-os-tab="macos" role="tab" aria-selected="false">macOS</button>
+        </div>
+        <div class="os-panel active" data-os-panel="linux">
+          <div class="method-tabs" role="tablist" aria-label="Linux installation method">
+            <button type="button" class="active" data-linux-tab="ubuntu" role="tab" aria-selected="true">Ubuntu / Debian</button>
+            <button type="button" data-linux-tab="fedora" role="tab" aria-selected="false">Fedora</button>
+            <button type="button" data-linux-tab="arch" role="tab" aria-selected="false">Arch</button>
+            <button type="button" data-linux-tab="binary" role="tab" aria-selected="false">Binary</button>
+            <button type="button" data-linux-tab="linux-docker" role="tab" aria-selected="false">Docker</button>
+            <button type="button" data-linux-tab="source" role="tab" aria-selected="false">Build from source</button>
+          </div>
+          <div class="linux-panel active" data-linux-panel="ubuntu">
+            <h3>Ubuntu or Debian</h3><p>Add the shared Toxdes repository once, then install VYLK.</p>
+            <div class="command-list"><div class="command-row"><code>sudo apt update &amp;&amp; sudo apt install -y ca-certificates curl gnupg &amp;&amp; curl -fsSL https://packages.toxdes.com/apt/pubkey.gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/toxdes-archive-keyring.gpg &amp;&amp; echo "deb [signed-by=/usr/share/keyrings/toxdes-archive-keyring.gpg] https://packages.toxdes.com/apt stable main" | sudo tee /etc/apt/sources.list.d/toxdes.list &amp;&amp; sudo apt update</code><button type="button" class="copy-button" aria-label="Copy repository setup command">Copy</button></div><div class="command-row"><code>sudo apt install vylk</code><button type="button" class="copy-button" aria-label="Copy install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+            <p class="update-note"><b>Update:</b> run <code>sudo apt update &amp;&amp; sudo apt upgrade vylk</code>, then restart VYLK.</p>
+          </div>
+          <div class="linux-panel" data-linux-panel="fedora">
+            <h3>Fedora</h3><p>Add the shared Toxdes repository once, then install VYLK.</p>
+            <div class="command-list"><div class="command-row"><code>printf '%s\n' '[toxdes]' 'name=Toxdes' 'baseurl=https://packages.toxdes.com/rpm' 'enabled=1' 'gpgcheck=1' 'repo_gpgcheck=1' 'gpgkey=https://packages.toxdes.com/rpm/pubkey.gpg' | sudo tee /etc/yum.repos.d/toxdes.repo</code><button type="button" class="copy-button" aria-label="Copy Fedora repository command">Copy</button></div><div class="command-row"><code>sudo dnf install vylk</code><button type="button" class="copy-button" aria-label="Copy Fedora install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+            <p class="update-note"><b>Update:</b> run <code>sudo dnf upgrade vylk</code>, then restart VYLK.</p>
+          </div>
+          <div class="linux-panel" data-linux-panel="arch">
+            <h3>Arch Linux</h3><p>VYLK is available in the AUR.</p><div class="command-list"><div class="command-row"><code>yay -S vylk-bin</code><button type="button" class="copy-button" aria-label="Copy AUR install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div><p>To build from the current source instead, use <code>yay -S vylk-git</code>.</p>
+            <p class="update-note"><b>Update:</b> run <code>yay -Syu vylk-bin</code>, then restart VYLK.</p>
+          </div>
+          <div class="linux-panel" data-linux-panel="binary">
+            <h3>Standalone binary</h3><p>Download the archive for your processor, then put the binary on your <code>PATH</code>.</p><p class="download-links"><a data-release-asset="vylk_{version}_amd64.tar.gz" data-release-label="Download v{version} - AMD64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz">Download v__VYLK_VERSION__ - AMD64</a><a data-release-asset="vylk_{version}_arm64.tar.gz" data-release-label="Download v{version} - ARM64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___arm64.tar.gz">Download v__VYLK_VERSION__ - ARM64</a></p><div class="command-list"><div class="command-row"><code>curl -fsSL https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz | sudo tar xzC /</code><button type="button" class="copy-button" aria-label="Copy binary install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+            <p class="update-note"><b>Update:</b> download the newer archive, replace the binary, and restart VYLK. Your notes and database stay where they are.</p>
+          </div>
+          <div class="linux-panel" data-linux-panel="linux-docker">
+            <h3>Docker</h3><p>The image supports Linux AMD64 and ARM64. The named volume keeps your notes and database.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p>Open <a href="http://localhost:8080">localhost:8080</a> after the container starts.</p>
+            <p class="update-note"><b>Update:</b> pull the new image, remove the container, then run the same command again with the volume unchanged.</p>
+          </div>
+          <div class="linux-panel" data-linux-panel="source">
+            <h3>Build from source</h3><p>Requires Git and Go 1.25.1+.</p><div class="command-list"><div class="command-row"><code>git clone https://github.com/toxdes/vylk.git &amp;&amp; cd vylk</code><button type="button" class="copy-button" aria-label="Copy clone command">Copy</button></div><div class="command-row"><code>go build -trimpath -ldflags="-s -w -X main.version=$(cat VERSION)" -o vylk .</code><button type="button" class="copy-button" aria-label="Copy build command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+            <p class="update-note"><b>Update:</b> pull the latest source, rebuild the binary, and restart the process.</p>
+          </div>
+        </div>
+        <div class="os-panel" data-os-panel="windows">
+          <div class="method-tabs" role="tablist" aria-label="Windows installation method"><button type="button" class="active" data-windows-tab="zip" role="tab" aria-selected="true">Binary</button><button type="button" data-windows-tab="docker" role="tab" aria-selected="false">Docker</button></div>
+          <div class="platform-panel active" data-windows-panel="zip"><h3 id="windows">Windows binary</h3><p>Download the ZIP archive, extract it, then open PowerShell in the extracted folder.</p><p><a data-release-asset="vylk-{version}-windows-amd64.zip" data-release-label="Download v{version} - Windows AMD64" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-windows-amd64.zip">Download v__VYLK_VERSION__ - Windows AMD64</a></p><div class="command-list"><div class="command-row"><code>$env:VYLK_PASSWORD="replace-with-your-password"</code><button type="button" class="copy-button" aria-label="Copy Windows password command">Copy</button></div><div class="command-row"><code>.\vylk.exe</code><button type="button" class="copy-button" aria-label="Copy Windows start command">Copy</button></div></div><p class="update-note"><b>Update:</b> download the newer ZIP, replace the executable in the same folder, and start it again. Keep the <code>notes</code> folder and <code>vylk.db</code> file.</p></div>
+          <div class="platform-panel" data-windows-panel="docker"><h3>Docker</h3><p>Use the Docker image. Your notes stay in a named volume.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the new image, remove the container, and run the same command again with <code>vylk-data</code> unchanged.</p></div>
+        </div>
+        <div class="os-panel" data-os-panel="macos">
+          <div class="method-tabs" role="tablist" aria-label="macOS installation method"><button type="button" class="active" data-macos-tab="homebrew" role="tab" aria-selected="true">Homebrew</button><button type="button" data-macos-tab="docker" role="tab" aria-selected="false">Docker</button><button type="button" data-macos-tab="zip" role="tab" aria-selected="false">Binary</button><button type="button" data-macos-tab="source" role="tab" aria-selected="false">Build from source</button></div>
+          <div class="platform-panel active" data-macos-panel="homebrew"><h3 id="macos">Homebrew</h3><p>After the Toxdes tap is published:</p><div class="command-list"><div class="command-row"><code>brew install toxdes/tap/vylk</code><button type="button" class="copy-button" aria-label="Copy Homebrew install command">Copy</button></div></div><p class="update-note"><b>Update:</b> run <code>brew update &amp;&amp; brew upgrade vylk</code>.</p></div>
+          <div class="platform-panel" data-macos-panel="zip"><h3>macOS binary</h3><p>Download the ZIP archive for your Mac, extract it, then start VYLK from Terminal.</p><p class="download-links"><a data-release-asset="vylk-{version}-macos-amd64.zip" data-release-label="Download v{version} - Intel" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-amd64.zip">Download v__VYLK_VERSION__ - Intel</a><a data-release-asset="vylk-{version}-macos-arm64.zip" data-release-label="Download v{version} - Apple Silicon" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-arm64.zip">Download v__VYLK_VERSION__ - Apple Silicon</a></p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy macOS start command">Copy</button></div></div><p class="update-note"><b>Update:</b> download the newer ZIP, replace the binary, and restart VYLK. Keep your notes folder and database.</p></div>
+          <div class="platform-panel" data-macos-panel="docker"><h3>Docker</h3><p>Use the Docker image. Your notes stay in a named volume.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the new image, remove the container, and run the same command again with <code>vylk-data</code> unchanged.</p></div>
+          <div class="platform-panel" data-macos-panel="source"><h3>Build from source</h3><p>Install Go, then build VYLK from the public source repository.</p><div class="command-list"><div class="command-row"><code>git clone https://github.com/toxdes/vylk.git &amp;&amp; cd vylk</code><button type="button" class="copy-button" aria-label="Copy clone command">Copy</button></div><div class="command-row"><code>go build -trimpath -ldflags="-s -w -X main.version=$(cat VERSION)" -o vylk .</code><button type="button" class="copy-button" aria-label="Copy build command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the latest source, rebuild the binary, and restart it.</p></div>
+        </div>
+      </section>
+
+      <section id="remote">
+        <h2>Use your other devices</h2>
+        <p>On the same trusted network, open the host computer's local IP address on port 8080. VYLK must be running and the host firewall must allow the connection.</p>
+        <p>For access outside your home or office, put VYLK behind an HTTPS reverse proxy on a domain you control. Browsers normally require HTTPS for service workers and PWA installation, except on localhost.</p>
+        <p>Sign in online once on each device before relying on offline access. Keep password protection enabled and use <code>VYLK_TRUST_PROXY=1</code> only when a trusted proxy supplies the forwarding headers.</p>
+      </section>
+
+      <section id="config">
+        <h2>Configuration</h2>
+        <p>VYLK uses environment variables. Secret variables also accept a <code>_FILE</code> form, such as <code>VYLK_ENCRYPTION_PASSWORD_FILE</code>, which is useful for Docker and other secret managers.</p>
+        <div class="table-wrap"><table><caption class="visually-hidden">VYLK configuration variables</caption><thead><tr><th scope="col">Variable</th><th scope="col">Default</th><th scope="col">Purpose</th></tr></thead><tbody>
+          <tr><td>VYLK_PASSWORD</td><td>none</td><td>Password required for session authentication.</td></tr>
+          <tr><td>PORT</td><td>8080</td><td>HTTP listen port.</td></tr>
+          <tr><td>VYLK_DIR</td><td>./notes</td><td>Directory containing Markdown note files.</td></tr>
+          <tr><td>VYLK_DB</td><td>./vylk.db</td><td>SQLite database path for metadata and sync state.</td></tr>
+          <tr><td>VYLK_ENCRYPTION_PASSWORD</td><td>none</td><td>Enables versioned encryption using an Argon2id-derived key.</td></tr>
+          <tr><td>VYLK_ENCRYPTION_KEY</td><td>none</td><td>Enables encryption with an explicitly encoded 32-byte key using the <code>hex:</code> or <code>base64:</code> prefix.</td></tr>
+          <tr><td>VYLK_TRUST_PROXY</td><td>unset</td><td>Set to <code>1</code> only behind a trusted TLS-terminating proxy.</td></tr>
+          <tr><td>VYLK_MIGRATE_ENCRYPTION</td><td>unset</td><td>Set to <code>1</code> once when upgrading legacy encrypted notes.</td></tr>
+          <tr><td>ARTIFICIAL_RTT_DELAY_MS</td><td>0</td><td>Development-only request delay. Do not enable it in production.</td></tr>
+        </tbody></table></div>
+        <h3>A practical local setup</h3>
+        <div class="command-list"><div class="command-row"><code>VYLK_PASSWORD=change-this PORT=8080 VYLK_DIR=./notes VYLK_DB=./vylk.db ./vylk</code><button type="button" class="copy-button" aria-label="Copy local configuration command">Copy</button></div></div>
+      </section>
+
+      <section id="features">
+        <h2>Features</h2>
+        <div class="feature-list">
+          <div><h3>Markdown and live preview</h3><p>Write Markdown, use the formatting toolbar, and see the rendered result beside the editor. Cursor-position highlighting connects source text to the preview.</p></div>
+          <div><h3>Focused editing</h3><p>Use fullscreen mode for the editor or preview. Tags, filtering, autosave, and manual save keep the writing flow close at hand.</p></div>
+          <div><h3>Configurable interface</h3><p>Preferences control themes, interface fonts, editor and preview fonts, autosave, preview visibility, header and toolbar visibility, details behavior, cursor highlighting, status display, and save-button location.</p></div>
+          <div><h3>Offline-first notes</h3><p>After the first online sign-in, the installed app caches its shell and notes, stores edits in IndexedDB, and synchronizes when the connection returns.</p></div>
+          <div><h3>Most devices</h3><p>The responsive interface works across desktop and mobile browsers. Install it as a PWA from a supported browser and open it like an app.</p></div>
+          <div><h3>Simple storage</h3><p>Notes remain Markdown files. SQLite stores metadata such as titles, tags, timestamps, and sync information.</p></div>
+        </div>
+      </section>
+
+      <section id="security">
+        <h2>Encryption and safety</h2>
+        <p>Use <code>VYLK_ENCRYPTION_PASSWORD</code> for a passphrase. VYLK derives the file-encryption key with Argon2id and stores only non-secret key-derivation metadata in <code>VYLK_DIR/.vylk-crypto.json</code>.</p>
+        <p>For key-based deployments, use a random 32-byte value with the <code>hex:</code> or <code>base64:</code> prefix. Existing arbitrary key values use a legacy format.</p>
+        <h3>Migrate legacy encrypted notes</h3>
+        <p>Back up the notes directory and database. Replace the legacy key setting with <code>VYLK_ENCRYPTION_PASSWORD</code> using the same secret, start once with <code>VYLK_MIGRATE_ENCRYPTION=1</code>, then restart without the migration flag.</p>
+        <div class="callout"><strong>Know what is protected.</strong><p>Encryption at rest protects encrypted note bodies if the notes directory is lost and the key is stored separately. A compromised running server is outside this protection, and SQLite metadata such as titles, tags, and timestamps remains plaintext.</p></div>
+        <h3>Migration backups</h3>
+        <p>Before a pending database migration, VYLK creates a consistent SQLite snapshot beside the database. The three newest <code>*.pre-migration-*.db</code> snapshots are retained. Keep roughly one extra database-sized block of free space.</p>
+      </section>
+
+      <section id="offline">
+        <h2>Offline use and sync</h2>
+        <p>Sign in once while online, then install VYLK as a PWA if your browser supports it. You can reopen it without a connection, edit or delete notes, and continue working. Changes wait in the browser's IndexedDB and synchronize when connectivity returns.</p>
+        <p>While the app is open, an authenticated event stream watches for changes. A 25-second heartbeat drives the Online or Offline indicator. A missing heartbeat for 70 seconds is treated as offline; reconnection performs a full cache reconciliation before replaying local work.</p>
+        <p>If two devices change the same note, VYLK attempts a three-way merge. Non-overlapping line edits and one-sided title or tag changes merge automatically. Ambiguous overlaps open a conflict resolver that preserves both versions and lets you edit the result.</p>
+        <p>Offline copies are plaintext in the browser profile. Use a protected device and sign out on shared devices.</p>
+      </section>
+
+      <section id="build">
+        <h2>Build and test</h2>
+        <p>Build one local binary with the version embedded from <code>VERSION</code>:</p>
+        <div class="command-list"><div class="command-row"><code>go build -trimpath -ldflags="-s -w -X main.version=$(cat VERSION)" -o vylk .</code><button type="button" class="copy-button" aria-label="Copy Go build command">Copy</button></div></div>
+        <p>Build all supported binaries and platform archives with:</p>
+        <div class="command-list"><div class="command-row"><code>./build.py</code><button type="button" class="copy-button" aria-label="Copy build script command">Copy</button></div></div>
+        <p>Build the Linux packages and archives with Yesb:</p>
+        <div class="command-list"><div class="command-row"><code>./yesb/build_all.py</code><button type="button" class="copy-button" aria-label="Copy Yesb build command">Copy</button></div></div>
+        <p>Run the Go, frontend, and optional browser suites:</p>
+        <div class="command-list"><div class="command-row"><code>go test ./...</code><button type="button" class="copy-button" aria-label="Copy Go test command">Copy</button></div><div class="command-row"><code>npm run test:frontend</code><button type="button" class="copy-button" aria-label="Copy frontend test command">Copy</button></div><div class="command-row"><code>npm run test:browser</code><button type="button" class="copy-button" aria-label="Copy browser test command">Copy</button></div></div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="docs-footer"><span>VYLK</span><span>Copyright 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span><a href="https://github.com/toxdes/vylk">View on GitHub</a></footer>
+  <script src="../version.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

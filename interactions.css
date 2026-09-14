@@ -1,0 +1,133 @@
+/* One definition per state. SVG strokes keep the head and shaft the same weight. */
+.cta-arrow {
+  display: inline-block;
+  width: 16px;
+  height: 12px;
+  flex: 0 0 16px;
+  margin-left: 8px;
+  overflow: visible;
+  vertical-align: -1px;
+}
+.arrow-shaft {
+  transform-origin: 1px 6px;
+  transform: scaleX(0);
+  opacity: 0;
+  transition: transform 160ms cubic-bezier(.2,.7,.3,1), opacity 100ms ease-out;
+}
+.arrow-head {
+  transform: translateX(0);
+  transition: transform 160ms cubic-bezier(.2,.7,.3,1);
+}
+a:is(:hover, :focus-visible) .arrow-shaft { transform: scaleX(1); opacity: 1; }
+a:is(:hover, :focus-visible) .arrow-head { transform: translateX(3px); }
+
+.sticky-note.paper-ready {
+  width: 56px;
+  height: 56px;
+  min-height: 0;
+  right: auto;
+  padding: 0;
+  display: block;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: none;
+  transform: none;
+  scale: 1;
+  animation: none;
+  transition: none;
+  cursor: grab;
+  touch-action: none;
+}
+.sticky-note.paper-ready > b,
+.sticky-note.paper-ready > span,
+.sticky-note.paper-ready::before,
+.sticky-note.paper-ready::after { display: none; }
+.paper-drawing { display: block; width: 100%; height: 100%; overflow: visible; }
+.paper-ready .paper-drawing { filter: drop-shadow(1px 4px 2px rgb(42 37 30 / 14%)); }
+.paper-ready:hover .paper-drawing { filter: drop-shadow(1px 5px 3px rgb(42 37 30 / 20%)); }
+.sticky-note.ball-in-play { opacity: 0; cursor: grabbing; }
+.sticky-note.paper-discarded { visibility: hidden; pointer-events: none; }
+
+.paper-game { position: fixed; inset: 0; z-index: 100; pointer-events: none; isolation: isolate; contain: layout style; }
+.flying-paper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56px;
+  height: 56px;
+  z-index: 4;
+  will-change: transform;
+}
+.flying-paper.is-caught { z-index: 2; }
+.flying-paper .paper-drawing { filter: none; }
+.game-guide { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; }
+.game-guide.is-visible { opacity: 1; }
+.game-tether { position: absolute; left: 0; top: 0; width: 1px; height: 1.5px; background: #ae2448; opacity: .25; transform-origin: 0 50%; }
+.game-origin { position: absolute; left: 0; top: 0; width: 8px; height: 8px; border-radius: 50%; background: #ae2448; opacity: .4; }
+.flying-paper, .bin-puff, .game-confetti, .game-bin { contain: layout style; }
+
+.game-bin {
+  position: absolute;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  width: 150px;
+  height: 160px;
+  z-index: 3;
+  visibility: hidden;
+}
+.game-bin.is-visible { visibility: visible; }
+.bin-art { position: absolute; inset: 0; transform-origin: 50% 100%; }
+.is-visible .bin-art { animation: bin-arrive 550ms cubic-bezier(.16,1,.3,1) both; }
+.bin-drawing { display: block; width: 150px; height: 160px; overflow: visible; }
+.bin-label {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 10px;
+  width: 130px;
+  text-align: center;
+  color: #48584d;
+  font: 600 27px/1.1 Caveat, cursive;
+  transform: rotate(-6deg);
+}
+.bin-lid { transform-origin: 22px 50px; transition: transform 180ms cubic-bezier(.2,.7,.3,1); }
+.is-open .bin-lid { transform: translateY(-6px) rotate(-42deg); }
+.is-open .bin-label { opacity: 0; }
+.game-bin.is-celebrating .bin-art { animation: bin-chomp 400ms ease-out; }
+.bin-puff { position: absolute; width: 52px; height: 44px; z-index: 5; pointer-events: none; }
+.game-confetti { position: absolute; left: 0; top: 0; width: 7px; height: 11px; z-index: 6; pointer-events: none; }
+.note-invitation {
+  position: absolute;
+  top: -60px;
+  left: 0;
+  right: 0;
+  min-height: 48px;
+  padding-inline: 8px;
+  color: #48584d;
+  font: 600 26px/1.2 Caveat, cursive;
+  transform: rotate(-3deg);
+  pointer-events: none;
+  user-select: none;
+}
+.game-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@keyframes bin-arrive {
+  from { opacity: 0; transform: translate(-25px, 60px) rotate(-12deg); }
+  to { opacity: 1; transform: translate(0, 0) rotate(0); }
+}
+@keyframes bin-chomp {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06, .93) rotate(-2deg); }
+  75% { transform: scale(.98, 1.02) rotate(1deg); }
+  100% { transform: scale(1); }
+}
+@media (max-width: 560px) {
+  /* Leave room for the scattered notes' rotation without sideways scrolling. */
+  .hero-notes { width: calc(100% - 32px); justify-self: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arrow-shaft, .arrow-head, .bin-lid { transition: none; }
+  .is-visible .bin-art, .game-bin.is-celebrating .bin-art { animation: none; }
+}
+/* The notes are charming at rest, but extra composited layers steal budget
+   from the actual game on inexpensive phones. */
+html.paper-game-active .sticky-note:not(.paper-ready) { animation-play-state: paused; }

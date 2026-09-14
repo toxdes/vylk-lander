@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VYLK is a lightweight, self-hosted Markdown editor for notes you control.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#f4f5f3">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="VYLK - Make space for good notes">
+  <meta property="og:description" content="A quiet, self-hosted place to write, with notes on a computer you control.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="VYLK - Make space for good notes">
+  <meta name="twitter:description" content="A quiet, self-hosted place to write, with notes on a computer you control.">
+  <title>VYLK - make space for good notes</title>
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="interactions.css">
+  <link rel="stylesheet" href="install.css">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#top"><img src="assets/vylk-logo.webp" alt="" width="29" height="29"><span>VYLK</span></a>
+    <nav class="nav-links" aria-label="Main navigation"><a href="#install">Install</a><a href="docs/index.html">Docs</a><a href="https://github.com/toxdes/vylk">Source</a></nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-side"><div class="side-line"></div><p>For notes that should stay close</p></div>
+      <div class="hero-content">
+        <h1>Make space<br>for good notes.</h1>
+        <p>A quiet place to write, with your notes on a computer you control. Open it in your browser, make it your own, and keep writing even when the internet drops.</p>
+        <div class="hero-actions"><a class="primary" href="https://vylk-demo.toxdes.com">Try Live Demo <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="secondary" href="#install">Get Vylk <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      </div>
+      <div class="hero-notes" aria-label="VYLK features">
+        <article class="sticky-note note-pink"><b>Live preview</b><span>See your words take shape as you write.</span></article>
+        <article class="sticky-note note-yellow"><b>Offline first</b><span>Keep editing when the internet is away.</span></article>
+        <article class="sticky-note note-blue"><b>Auto-save</b><span>Keep your latest changes on the page.</span></article>
+        <article class="sticky-note note-green"><b>Focused writing</b><span>Stay in a distraction-free writing flow.</span></article>
+        <article class="sticky-note note-orange"><b>Easy to install</b><span>A small app. A few steps. Your own space.</span></article>
+        <article class="sticky-note note-lilac"><b>Install as an app</b><span>Add VYLK to your home screen and use it like an app.</span></article>
+      </div>
+    </section>
+
+    <section class="screen-stage" aria-labelledby="preview-title">
+      <h2 id="preview-title" class="visually-hidden">VYLK app preview</h2>
+      <div class="stage-label"><span class="stage-brand"><img src="assets/vylk-logo.webp" alt="">VYLK App</span></div>
+      <div class="screen-carousel" role="region" aria-roledescription="carousel" aria-label="VYLK app screens">
+        <div class="carousel-viewport">
+          <figure class="stage-preview is-active" id="screen-dashboard" role="group" aria-roledescription="slide" aria-label="Dashboard screen"><figcaption class="visually-hidden">Dashboard screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-dashboard-mobile.webp"><img src="assets/vylk-dashboard-desktop.webp" alt="VYLK dashboard showing a small collection of notes" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
+          <figure class="stage-preview stage-preview-editor" id="screen-editor" role="group" aria-roledescription="slide" aria-label="Editor screen" aria-hidden="true"><figcaption class="visually-hidden">Editor screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-editor-mobile.webp"><img src="assets/vylk-editor-desktop.webp" alt="VYLK editor showing a document and rendered preview" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
+          <figure class="stage-preview" id="screen-preferences" role="group" aria-roledescription="slide" aria-label="Preferences screen" aria-hidden="true"><figcaption class="visually-hidden">Preferences screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-preferences-mobile.webp"><img src="assets/vylk-preferences-desktop.webp" alt="VYLK editor preferences showing font and saving options" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
+          <figure class="stage-preview" id="screen-focus" role="group" aria-roledescription="slide" aria-label="Distraction-free editor screen" aria-hidden="true"><figcaption class="visually-hidden">Distraction-free editor screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-focus-mobile.webp"><img src="assets/vylk-focus-desktop.webp" alt="VYLK distraction-free editor with the header hidden" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
+          <button type="button" class="carousel-arrow carousel-arrow-prev" data-screen-prev aria-label="Show previous app screen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m10 3-5 5 5 5"/></svg></button>
+          <button type="button" class="carousel-arrow carousel-arrow-next" data-screen-next aria-label="Show next app screen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        </div>
+      </div>
+      <div class="stage-bottom"><span>Lightweight enough to run anywhere.</span><span>Designed for everyday notes.</span></div>
+    </section>
+
+    <section class="why" id="why">
+      <div class="why-heading"><h2>Nothing extra to manage.</h2><p>Just the pieces that help you write, find, and return to your notes.</p></div>
+      <div class="why-lines">
+        <div><span>write</span><h3>See the note as you write it</h3><p>See your formatting as you write. Use the toolbar for headings and lists, then go fullscreen when you want to focus.</p></div>
+        <div><span>offline</span><h3>Keep working without internet</h3><p>The installed PWA caches its shell and notes, saves edits in IndexedDB, and syncs when your connection returns.</p></div>
+        <div><span>shape</span><h3>Make the workspace yours</h3><p>Choose your colors and fonts. Show the tools you use, hide the ones you don't, and give your words more room.</p></div>
+        <div><span>protect</span><h3>Protect what is on disk</h3><p>Turn on optional encryption to protect note contents stored on your server. Titles and tags are stored separately; the docs explain what's covered.</p></div>
+        <div><span>devices</span><h3>Use the devices you already have</h3><p>Write in your desktop or mobile browser. Add VYLK to your home screen to open it like an app.</p></div>
+        <div><span>save</span><h3>Save as you go</h3><p>Your changes save as you pause. Prefer to save them yourself? That's always an option too.</p></div>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div class="install-title"><h2>Get Vylk.</h2><p>Your notes. Your computer.<br>No subscription.</p><a class="setup-text-link" href="docs/index.html#install">Read the full setup notes</a></div>
+      <div class="install-content">
+        <div class="os-tabs" role="tablist" aria-label="Your operating system">
+          <button type="button" class="active" data-os-tab="linux" role="tab" aria-selected="true">Linux</button>
+          <button type="button" data-os-tab="windows" role="tab" aria-selected="false">Windows</button>
+          <button type="button" data-os-tab="macos" role="tab" aria-selected="false">macOS</button>
+        </div>
+        <div class="os-panel active" data-os-panel="linux">
+          <div class="method-tabs" role="tablist" aria-label="Linux installation method">
+            <button type="button" class="active" data-linux-tab="ubuntu" role="tab" aria-selected="true">Ubuntu / Debian</button>
+            <button type="button" data-linux-tab="fedora" role="tab" aria-selected="false">Fedora</button>
+            <button type="button" data-linux-tab="arch" role="tab" aria-selected="false">Arch</button>
+            <button type="button" data-linux-tab="binary" role="tab" aria-selected="false">Binary</button>
+            <button type="button" data-linux-tab="linux-docker" role="tab" aria-selected="false">Docker</button>
+            <button type="button" data-linux-tab="source" role="tab" aria-selected="false">Build from source</button>
+          </div>
+          <div class="linux-panel active" data-linux-panel="ubuntu" id="method-ubuntu">
+            <details><summary>Add the APT repository (one-time)</summary><div class="command-list"><div class="command-row"><code>sudo apt update &amp;&amp; sudo apt install -y ca-certificates curl gnupg &amp;&amp; curl -fsSL https://packages.toxdes.com/apt/pubkey.gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/toxdes-archive-keyring.gpg &amp;&amp; echo &quot;deb [signed-by=/usr/share/keyrings/toxdes-archive-keyring.gpg] https://packages.toxdes.com/apt stable main&quot; | sudo tee /etc/apt/sources.list.d/toxdes.list &amp;&amp; sudo apt update</code><button type="button" class="copy-button" aria-label="Copy repository setup">Copy</button></div></div></details>
+            <p class="install-step">To install:</p><div class="command-list"><div class="command-row"><code>sudo apt install vylk</code><button type="button" class="copy-button" aria-label="Copy install command">Copy</button></div></div>
+            <p class="install-step">To start VYLK:</p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+          </div>
+          <div class="linux-panel" data-linux-panel="binary" id="method-binary">
+            <div class="binary-download"><a class="setup-text-link" data-linux-download="amd64" data-release-asset="vylk_{version}_amd64.tar.gz" data-release-label="Download v{version} - AMD64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz">Download v__VYLK_VERSION__ - AMD64</a><a class="setup-text-link" data-linux-download="arm64" data-release-asset="vylk_{version}_arm64.tar.gz" data-release-label="Download v{version} - ARM64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___arm64.tar.gz">Download v__VYLK_VERSION__ - ARM64</a></div>
+            <p class="install-step">Or install it to your PATH in one step:</p>
+            <div class="command-list"><div class="command-row"><code data-linux-install>curl -fsSL https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz | sudo tar xzC /</code><button type="button" class="copy-button" aria-label="Copy install command">Copy</button></div></div>
+            <p class="install-step">To start VYLK:</p>
+            <div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+          </div>
+          <div class="linux-panel" data-linux-panel="fedora" id="method-fedora">
+            <details><summary>Add the DNF repository (one-time)</summary><div class="command-list"><div class="command-row"><code>printf '%s\n' '[toxdes]' 'name=Toxdes' 'baseurl=https://packages.toxdes.com/rpm' 'enabled=1' 'gpgcheck=1' 'repo_gpgcheck=1' 'gpgkey=https://packages.toxdes.com/rpm/pubkey.gpg' | sudo tee /etc/yum.repos.d/toxdes.repo</code><button type="button" class="copy-button" aria-label="Copy repository setup">Copy</button></div></div></details>
+            <p class="install-step">To install:</p><div class="command-list"><div class="command-row"><code>sudo dnf install vylk</code><button type="button" class="copy-button" aria-label="Copy install command">Copy</button></div></div>
+            <p class="install-step">To start VYLK:</p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+          </div>
+          <div class="linux-panel" data-linux-panel="arch" id="method-arch">
+            <p>VYLK is available in the AUR.</p><p class="install-step">To install:</p><div class="command-list"><div class="command-row"><code>yay -S vylk-bin</code><button type="button" class="copy-button" aria-label="Copy install command">Copy</button></div></div>
+            <p class="install-step">To start VYLK:</p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+            <details><summary>Build from AUR instead</summary><div class="command-list"><div class="command-row"><code>yay -S vylk-git</code><button type="button" class="copy-button" aria-label="Copy command">Copy</button></div></div></details>
+          </div>
+          <div class="linux-panel" data-linux-panel="linux-docker" id="method-linux-docker"><p>Use the published VYLK image. Notes and the database stay in a named volume.</p><p class="install-step">To start VYLK:</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p>Open <a href="http://localhost:8080">localhost:8080</a> after the container starts.</p><a class="setup-text-link" href="docs/index.html#install">Read Docs</a></div>
+          <div class="linux-panel" data-linux-panel="source" id="method-source"><p>Requires Git and Go 1.25.1+.</p><p class="install-step">To build:</p><div class="command-list"><div class="command-row"><code>git clone https://github.com/toxdes/vylk.git</code><button type="button" class="copy-button" aria-label="Copy command">Copy</button></div><div class="command-row"><code>cd vylk</code><button type="button" class="copy-button" aria-label="Copy command">Copy</button></div><div class="command-row"><code>go build -trimpath -ldflags=&quot;-s -w -X main.version=$(cat VERSION)&quot; -o vylk .</code><button type="button" class="copy-button" aria-label="Copy command">Copy</button></div></div><p class="install-step">To start VYLK:</p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div></div>
+        </div>
+        <div class="os-panel" data-os-panel="windows">
+          <div class="method-tabs" role="tablist" aria-label="Windows installation method">
+            <button type="button" class="active" data-windows-tab="zip" role="tab" aria-selected="true">Binary</button>
+            <button type="button" data-windows-tab="docker" role="tab" aria-selected="false">Docker</button>
+          </div>
+          <div class="platform-panel active" data-windows-panel="zip" id="method-windows-zip"><h3>Windows binary</h3><p>Download the ZIP archive, extract it, then open PowerShell in the extracted folder.</p><p><a class="setup-text-link" data-release-asset="vylk-{version}-windows-amd64.zip" data-release-label="Download v{version} - Windows AMD64" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-windows-amd64.zip">Download v__VYLK_VERSION__ - Windows AMD64</a></p><p>Set a password and start VYLK:</p><div class="command-list"><div class="command-row"><code>$env:VYLK_PASSWORD=&quot;replace-with-your-password&quot;</code><button type="button" class="copy-button" aria-label="Copy command">Copy</button></div><div class="command-row"><code>.\vylk.exe</code><button type="button" class="copy-button" aria-label="Copy command">Copy</button></div></div></div>
+          <div class="platform-panel" data-windows-panel="docker" id="method-windows-docker"><h3>Docker</h3><p>Use the Docker image. Your notes stay in a named volume.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p>Open <a href="http://localhost:8080">localhost:8080</a> after the container starts.</p><a class="setup-text-link" href="docs/index.html#install">Read Docs</a></div>
+        </div>
+        <div class="os-panel" data-os-panel="macos">
+          <div class="method-tabs" role="tablist" aria-label="macOS installation method">
+            <button type="button" class="active" data-macos-tab="homebrew" role="tab" aria-selected="true">Homebrew</button>
+            <button type="button" data-macos-tab="docker" role="tab" aria-selected="false">Docker</button>
+            <button type="button" data-macos-tab="zip" role="tab" aria-selected="false">Binary</button>
+            <button type="button" data-macos-tab="source" role="tab" aria-selected="false">Build from source</button>
+          </div>
+          <div class="platform-panel active" data-macos-panel="homebrew" id="method-macos-homebrew"><h3>Homebrew</h3><p>After the Toxdes tap is published, install VYLK with:</p><div class="command-list"><div class="command-row"><code>brew install toxdes/tap/vylk</code><button type="button" class="copy-button" aria-label="Copy Homebrew install command">Copy</button></div></div><p>Until then, use the macOS ZIP below.</p></div>
+          <div class="platform-panel" data-macos-panel="zip" id="method-macos-zip"><h3>macOS binary</h3><p>Download the ZIP archive for your Mac, extract it, then start VYLK from Terminal.</p><div class="binary-download"><a class="setup-text-link" data-release-asset="vylk-{version}-macos-amd64.zip" data-release-label="Download v{version} - Intel" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-amd64.zip">Download v__VYLK_VERSION__ - Intel</a><a class="setup-text-link" data-release-asset="vylk-{version}-macos-arm64.zip" data-release-label="Download v{version} - Apple Silicon" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-arm64.zip">Download v__VYLK_VERSION__ - Apple Silicon</a></div><p class="install-step">To start VYLK:</p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div></div>
+          <div class="platform-panel" data-macos-panel="docker" id="method-macos-docker"><h3>Docker</h3><p>Use the Docker image. Your notes stay in a named volume.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p>Open <a href="http://localhost:8080">localhost:8080</a> after the container starts.</p><a class="setup-text-link" href="docs/index.html#install">Read Docs</a></div>
+          <div class="platform-panel" data-macos-panel="source" id="method-macos-source"><h3>Build from source</h3><p>Install Go, then build VYLK from the public source repository.</p><div class="command-list"><div class="command-row"><code>git clone https://github.com/toxdes/vylk.git &amp;&amp; cd vylk</code><button type="button" class="copy-button" aria-label="Copy clone command">Copy</button></div><div class="command-row"><code>go build -trimpath -ldflags=&quot;-s -w -X main.version=$(cat VERSION)&quot; -o vylk .</code><button type="button" class="copy-button" aria-label="Copy build command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div></div>
+        </div>
+        <div class="setup-finish"><p>Choose your own password. Keep VYLK running.<br>Open <a href="http://localhost:8080">localhost:8080</a> and start writing.</p></div>
+      </div>
+    </section>
+
+    <section class="statement"><p>VYLK is free and open source.</p><h2>Your writing does not need a subscription.</h2><a href="https://github.com/toxdes/vylk">View on GitHub<svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></section>
+  </main>
+
+  <footer><span>VYLK</span><span>&copy; 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span><a href="https://github.com/toxdes/vylk">GitHub</a></footer>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"VYLK","applicationCategory":"ProductivityApplication","operatingSystem":"Linux, Windows, macOS, Docker","description":"A lightweight, self-hosted Markdown editor for notes you control.","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"codeRepository":"https://github.com/toxdes/vylk"}
+  </script>
+  <script src="version.js"></script>
+  <script src="script.js"></script>
+  <script src="physics.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

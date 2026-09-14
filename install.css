@@ -1,0 +1,45 @@
+.install { grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: clamp(40px, 7vw, 100px); }
+.install-title h2 { font-size: clamp(2.6rem, 4.8vw, 4.8rem); }
+.install-title > .setup-text-link { display: inline-block; margin-top: 24px; }
+.setup-text-link, .download-links a { color: #f3a6b8; text-decoration: underline; text-underline-offset: 4px; }
+.setup-text-link:hover, .download-links a:hover { color: #fff; }
+.install-content { min-width: 0; border-top: 0; }
+.install .os-tabs { padding: 0; gap: 0; border-bottom: 1px solid #454b49; margin-bottom: 26px; }
+.install .os-tabs button {
+  flex: 1; padding: 14px 18px; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+  color: #b9bfbd; background: transparent; font: 500 15px Rubik, sans-serif;
+}
+.install .os-tabs button.active { border-bottom-color: #e3708e; color: #fff; }
+.install .os-tabs button:hover { color: #fff; background: #252928; }
+.method-tabs { display: flex; flex-wrap: wrap; gap: 0 20px; margin: 0 0 24px; }
+.method-tabs button { border: 0; padding: 10px 0; min-height: 44px; background: none; color: #b9bfbd; font: 400 14px Rubik, sans-serif; cursor: pointer; }
+.method-tabs button.active { color: #f3a6b8; text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+.method-tabs button:hover { color: #fff; }
+.method-tabs button:focus-visible { outline: 2px solid #f3a6b8; outline-offset: 4px; }
+.binary-download { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 20px; padding: 0 0 14px; border-bottom: 1px solid #3f4442; }
+.binary-download a { display: inline-flex; align-items: center; min-height: 38px; padding: 4px 0; font-weight: 500; }
+.install h3 { margin: 0 0 12px; font-size: 24px; font-weight: 500; line-height: 1.3; }
+.install-content p { margin: 0 0 18px; color: #b9bfbd; font-size: 15px; line-height: 1.65; }
+.install-content .install-step { margin: 22px 0 8px; color: #fff; font-size: 14px; font-weight: 500; }
+.install .command-list { margin: 16px 0; gap: 8px; }
+.install .command-row { border-color: #3f4442; padding: 12px 12px 12px 16px; border-radius: 6px; gap: 16px; }
+.install .command-row code { font-size: 12px; line-height: 1.7; }
+#method-binary .command-row code { font-size: 11px; }
+.install .copy-button { border-color: #69726e; border-radius: 4px; }
+.install details { margin: 0 0 22px; padding: 14px 0; border-bottom: 1px solid #3f4442; }
+.install summary { cursor: pointer; color: #f3a6b8; font-size: 15px; font-weight: 500; }
+.install details[open] summary { margin-bottom: 18px; }
+.install details a, .setup-finish a { color: #f3a6b8; text-decoration: underline; text-underline-offset: 3px; }
+.setup-finish { margin-top: 24px; padding-top: 20px; border-top: 1px solid #454b49; }
+.install .setup-finish p { margin: 0; }
+.install code { font-family: "JetBrains Mono", monospace; }
+.why-lines h3 { font-size: 20px; line-height: 1.3; }
+@media (max-width: 850px) {
+  .install { grid-template-columns: 1fr; }
+  .install-title p { max-width: 50ch; }
+  .nav .nav-links { display: flex; gap: 20px; }
+}
+@media (max-width: 560px) {
+  .install .command-row { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 12px; }
+  .install .copy-button { align-self: start; min-width: 55px; padding: 0 9px; }
+}
