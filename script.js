@@ -159,6 +159,66 @@
 })();
 
 (function () {
+  var trigger = document.querySelector('[data-demo-link]');
+  var dialog = document.querySelector('#demo-dialog');
+  if (!trigger || !dialog) return;
+
+  var continueLink = dialog.querySelector('[data-demo-continue]');
+  var lastFocused = null;
+  var focusableSelector = 'a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+  function restoreFocus() {
+    if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    lastFocused = null;
+  }
+
+  function closeDialog() {
+    if (dialog.hidden) return;
+    dialog.hidden = true;
+    document.documentElement.classList.remove('demo-dialog-open');
+    restoreFocus();
+  }
+
+  trigger.addEventListener('click', function (event) {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    lastFocused = document.activeElement;
+    continueLink.href = trigger.href;
+    dialog.hidden = false;
+    document.documentElement.classList.add('demo-dialog-open');
+    var closeButton = dialog.querySelector('[data-demo-close]');
+    if (closeButton) closeButton.focus();
+  });
+
+  dialog.querySelectorAll('[data-demo-close]').forEach(function (button) {
+    button.addEventListener('click', closeDialog);
+  });
+  dialog.addEventListener('click', function (event) {
+    if (event.target === dialog) closeDialog();
+  });
+  dialog.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDialog();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    var focusable = Array.from(dialog.querySelectorAll(focusableSelector)).filter(function (element) {
+      return element.offsetParent !== null;
+    });
+    if (!focusable.length) return;
+    var first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+})();
+
+(function () {
   var carousel = document.querySelector('.screen-carousel');
   if (!carousel) return;
   var slides = Array.from(carousel.querySelectorAll('.stage-preview'));

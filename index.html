@@ -34,7 +34,7 @@
       <div class="hero-content">
         <h1>Make space<br>for good notes.</h1>
         <p>A quiet place to write, with your notes on a computer you control. Open it in your browser, make it your own, and keep writing even when the internet drops.</p>
-        <div class="hero-actions"><a class="primary" href="https://vylk-demo.toxdes.com">Try Live Demo <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="secondary" href="#install">Get Vylk <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        <div class="hero-actions"><a class="primary" data-demo-link href="https://vylk.onrender.com" target="_blank" rel="noopener noreferrer">Try Live Demo <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="secondary" href="#install">Get Vylk <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       </div>
       <div class="hero-notes" aria-label="VYLK features">
         <article class="sticky-note note-pink"><b>Live preview</b><span>See your words take shape as you write.</span></article>
@@ -142,6 +142,22 @@
 
     <section class="statement"><p>VYLK is free and open source.</p><h2>Your writing does not need a subscription.</h2><a href="https://github.com/toxdes/vylk">View on GitHub<svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></section>
   </main>
+
+  <div class="demo-dialog" id="demo-dialog" role="dialog" aria-modal="true" aria-labelledby="demo-dialog-title" aria-describedby="demo-dialog-description" hidden>
+    <div class="demo-dialog-card">
+      <button class="demo-dialog-close" type="button" data-demo-close aria-label="Close demo notice">&times;</button>
+      <h2 id="demo-dialog-title">You are about to leave VYLK</h2>
+      <div class="demo-dialog-copy" id="demo-dialog-description">
+        <p>The demo is temporarily hosted on <a href="https://render.com" target="_blank" rel="noopener noreferrer">Render</a>.</p>
+        <p class="demo-dialog-password"><strong>Password:</strong> <code>1234</code></p>
+        <p class="demo-dialog-recommendation"><strong>Recommended:</strong> try &ldquo;Add to home screen&rdquo; from Chrome browser to see how a PWA feels like.</p>
+      </div>
+      <div class="demo-dialog-actions">
+        <button class="demo-dialog-cancel" type="button" data-demo-close>Stay on VYLK</button>
+        <a class="primary demo-dialog-continue" data-demo-continue href="https://vylk.onrender.com" target="_blank" rel="noopener noreferrer">View on Render</a>
+      </div>
+    </div>
+  </div>
 
   <footer><span>VYLK</span><span>&copy; 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span><a href="https://github.com/toxdes/vylk">GitHub</a></footer>
   <script type="application/ld+json">
