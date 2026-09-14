@@ -59,9 +59,11 @@ const { pathToFileURL } = require('node:url');
       assert.equal(await page.locator('[data-linux-tab="ubuntu"]').getAttribute('aria-selected'), 'true');
       await page.locator('[data-os-tab="windows"]').click();
       assert.ok(await page.locator('[data-os-panel="windows"]').isVisible());
-      assert.equal(await page.locator('[data-windows-tab="zip"]').getAttribute('aria-selected'), 'true');
-      assert.ok(await page.locator('[data-windows-panel="zip"]').isVisible());
-      assert.match(await page.locator('[data-os-panel="windows"]').textContent(), /ZIP/);
+      assert.equal(await page.locator('[data-windows-tab="binary"]').getAttribute('aria-selected'), 'true');
+      assert.ok(await page.locator('[data-windows-panel="binary"]').isVisible());
+      assert.match(await page.locator('[data-os-panel="windows"]').textContent(), /executable/i);
+      assert.match(await page.locator('[data-release-asset="vylk_windows_amd64_{version}.exe"]').getAttribute('href'), /vylk_windows_amd64_3\.0\.0\.exe$/);
+      assert.match(await page.locator('[data-windows-panel="binary"] code').last().textContent(), /vylk_windows_amd64_3\.0\.0\.exe$/);
       assert.equal(await page.locator('.command-row:visible').count(), 2);
       await page.locator('[data-windows-tab="docker"]').click();
       assert.equal(await page.locator('[data-windows-tab="docker"]').getAttribute('aria-selected'), 'true');
@@ -96,7 +98,7 @@ const { pathToFileURL } = require('node:url');
       const broken = await page.locator('a[href^="#"]').evaluateAll(links => links.filter(a => !document.getElementById(a.hash.slice(1))).map(a => a.hash));
       assert.deepEqual(broken, []);
       assert.deepEqual(errors, []);
-      console.log('PASS', width, 'concise install, processor-aware download and copy, all methods, OS keyboard tabs, planned ZIP/Homebrew, docs anchors');
+      console.log('PASS', width, 'concise install, processor-aware download and copy, all methods, OS keyboard tabs, Windows executable/Homebrew, docs anchors');
       await page.close();
     }
   } finally { await browser.close(); }
