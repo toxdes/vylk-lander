@@ -1,6 +1,9 @@
 {
   "name": "vylk-lander",
   "compatibility_date": "2026-09-11",
+  "observability": {
+    "enabled": false
+  },
   "assets": {
     "directory": "./dist"
   }
