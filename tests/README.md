@@ -4,21 +4,26 @@ The landing page is standalone: serve this directory as static files or open
 `index.html`. The deployment build is optional for local testing and writes a
 version-aware site to `dist/`.
 
-To prepare the Cloudflare Pages output locally, run `./build.sh`. It reads the
-public application `VERSION` file during the build and writes `dist/version.js`.
-Set `VYLK_VERSION` to use a local version without a network request.
+To prepare Cloudflare Pages output, run `./build.sh`. It selects the latest stable
+release, then fetches VERSION and API documentation from that release's tag.
+`VYLK_VERSION` selects a release explicitly but still downloads its docs.
+For an offline preview, also set `VYLK_API_SOURCE` to a local VYLK checkout with
+the same VERSION. Generated documentation and `dist/version.js` remain untracked.
 
 From the lander repository root:
 
 ```sh
-node --test tests/physics.test.cjs
-node tests/browser.cjs
-node tests/round.cjs
-node tests/rebounds.cjs
-node tests/install.cjs
+bun test tests/physics.test.cjs
+bun tests/browser.cjs
+bun tests/round.cjs
+bun tests/rebounds.cjs
+bun tests/install.cjs
+bun tests/docs.cjs
+python3 -B -m unittest discover -s tests -p 'test_*.py'
+bun tests/api.cjs
 ```
 
-Browser checks use the repository's Playwright dependency and Chrome at
+Browser checks require Playwright available to the test runner and Chrome at
 `/usr/bin/google-chrome`. They cover desktop mouse input, mobile touch with 4x
 CPU throttling, arrow rest/hover states, accurate flight without a landing hint, misses,
 keyboard cancellation, ball collisions, bin visibility, and a complete round
@@ -48,6 +53,14 @@ active throws to their starting positions.
 
 Installation content is based on the application repository's README.md,
 build.py, Dockerfile.runtime, and release.toml. The published Docker example
-uses the runtime image and persistent `/data` volume. Windows ZIP links are
-generated using the release naming convention; macOS currently documents the
-source build until the Homebrew tap is published.
+uses the runtime image and persistent `/data` volume. Windows executable and
+macOS ZIP links use the release naming conventions. Homebrew uses the published
+Toxdes tap; macOS also documents binary, source, and Docker options.
+
+`docs.cjs` verifies the E2EE anchor used by app help links, current configuration,
+security/recovery guidance, and desktop/mobile document layout. No live app or
+external deployment is required. Screenshots are written under `/tmp`.
+
+`api.cjs` requires a successful build. It checks every API operation, shared
+typography and colors, keyboard navigation, and desktop/mobile overflow.
+Python tests cover rendering, escaping, release selection, and failed builds.

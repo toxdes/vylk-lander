@@ -1,185 +1,77 @@
 ---
 name: vylk landing page
-description: A quiet, editorial dark surface for keeping personal notes close.
+description: A paper-light editorial surface for a personal, self-hosted notebook.
 colors:
-  ink-bg: "#0e1124"
-  ink-text: "#cfd1fc"
-  muted-text: "#a1a4cb"
-  line: "#1e293b"
-  accent: "#f13c66"
-  accent-hover: "#d42e55"
-  accent-text: "#ff718f"
-  surface: "#1a1d31"
-  success: "#55d58a"
-  warning: "#f5b84b"
+  paper: "#f4f5f3"
+  ink: "#151719"
+  muted: "#5c6265"
+  line: "#cfd3d1"
+  accent: "#ae2448"
+  accent-hover: "#871d39"
+  stage: "#dce2df"
+  code: "#1b1d1e"
 typography:
   display:
     fontFamily: "Rubik"
-    fontSize: "clamp(4.1rem, 8vw, 7.5rem)"
-    fontWeight: 690
-    lineHeight: 0.98
-    letterSpacing: "-0.035em"
-  italic-accent:
-    fontFamily: "Rubik"
-    fontSize: "inherit"
-    fontWeight: 400
-    lineHeight: 0.98
-    letterSpacing: "-0.04em"
+    fontWeight: 600
   body:
     fontFamily: "Rubik"
     fontSize: "1rem"
-    fontWeight: 400
-    lineHeight: 1.5
-  label:
-    fontFamily: "Rubik"
-    fontSize: "0.72rem"
-    fontWeight: 700
-    lineHeight: 1.5
-    letterSpacing: "0.1em"
-rounded:
-  sm: "5px"
-  md: "7px"
-  lg: "15px"
-spacing:
-  sm: "0.5rem"
-  md: "1rem"
-  lg: "2rem"
-  section: "clamp(8rem, 15vw, 13rem)"
-components:
-  button-primary:
-    backgroundColor: "{colors.accent}"
-    textColor: "{colors.ink-bg}"
-    rounded: "{rounded.md}"
-    padding: "0.78rem 1rem"
-  button-primary-hover:
-    backgroundColor: "{colors.accent-hover}"
-    textColor: "{colors.ink-bg}"
-    rounded: "{rounded.md}"
-  surface-panel:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink-text}"
-    rounded: "{rounded.sm}"
-    padding: "1.6rem"
+    lineHeight: 1.6
+  code:
+    fontFamily: "JetBrains Mono"
+  notes:
+    fontFamily: "Caveat"
 ---
 
-# Design System: vylk landing page
+# Design system: vylk lander
 
-## Overview
+This documents the current static site, not the app's theme. The homepage and
+docs use a light paper background, dark ink, and a restrained burgundy accent.
+The older dark-lander's palette and layout are no longer the visual authority.
+Use the shipped HTML/CSS and current screenshots for exact dimensions.
 
-**Creative North Star: "The Private Desk."**
+## Homepage
 
-The lander treats vylk like a well-kept desk: dark, quiet, tactile, and made for returning to. Large Rubik headlines carry the confidence; a restrained Rubik italic marks the human part of the message. The app is shown doing its job in the first viewport, so the visual world stays connected to the product rather than becoming abstract SaaS decoration.
+The homepage is a spacious editorial introduction. A large Rubik headline and
+plain-language promise sit beside handwritten feature notes. Those notes also
+support the existing playful paper-ball interaction. Keep Caveat confined to
+that illustration; navigation, feature explanations, and setup use Rubik.
 
-The palette is taken from vylk's Default Dark theme. The landing page adds only an accessible brighter accent tint for text-size pink labels; surfaces, borders, and primary pink remain faithful to the app.
+Real desktop/mobile app screenshots appear in a separate carousel below the
+hero. The feature section pairs a large heading with ruled rows rather than
+feature cards. The installation section uses a dark command surface, platform
+and method tabs, processor-specific downloads, and copy buttons. The closing
+statement uses a solid burgundy background and white text.
 
-**Key Characteristics:**
+The shared demo opens through a notice describing its temporary, public nature.
+It is not a place for private notes, and vault changes are disabled there.
 
-- Editorial scale with a quiet dark field and rare pink emphasis.
-- Real app write/preview screenshot as the hero's proof object.
-- Fine borders, restrained shadows, and clear command blocks for setup moments.
-- Plain-language copy for non-technical visitors.
+## Documentation
 
-## Colors
+The docs share the paper/ink palette and Rubik typography. Desktop has a sticky
+section outline beside a reading column. On smaller screens the outline wraps
+above the article. Installation commands use JetBrains Mono and copy buttons;
+configuration tables scroll inside their own wrapper. Inline code must wrap
+when needed rather than widening the page.
 
-Deep blue-purple surfaces make the page feel private and focused; pink is a deliberate signal for action and human emphasis, not a general wash.
+The `end-to-end-encryption` section is the stable destination for app help
+links. Put secure-context requirements and sign-in troubleshooting first,
+followed by setup, recovery, remembered browsers, devices, and security limits.
+Preserve the `security` anchor for backup and upgrade guidance.
 
-### Primary
+## Ownership and guardrails
 
-- **Vylk Pink** (#f13c66): Primary action background, marks, and focused highlights.
-- **Readable Pink** (#ff718f): Pink type on dark surfaces where the Default Dark accent needs a contrast lift.
-
-### Neutral
-
-- **Night Ink** (#0e1124): Page background and primary button text.
-- **Notebook Surface** (#1a1d31): Panels and elevated content blocks.
-- **Paper Text** (#cfd1fc): Headings and primary content.
-- **Quiet Ink** (#a1a4cb): Body copy and supporting details.
-- **Notebook Line** (#1e293b): Borders, rules, and dividers.
-- **Saved Green** (#55d58a): Saved/in-sync status in the product preview.
-
-### Named Rules
-
-**The Quiet Accent Rule.** Pink is rare enough to direct attention: action buttons, emphasis, and small status moments only.
-
-## Typography
-
-**Display Font:** Rubik from Google Fonts
-
-**Body Font:** Rubik from Google Fonts
-
-**Label Font:** Rubik from Google Fonts
-
-**Code Font:** JetBrains Mono from Google Fonts, used only inside commands and code blocks.
-
-**Character:** Rubik keeps the lander friendly, clear, and consistent. Italic Rubik provides the warmer voice for words such as "close," "home," and "useful."
-
-The sticky-note game uses Caveat from Google Fonts for its handwritten note voice. It is limited to the note illustration and is not used for navigation, instructions, or body copy.
-
-### Hierarchy
-
-- **Display** (690, `clamp(4.1rem, 8vw, 7.5rem)`, `.98): Hero thesis and closing statement.
-- **Headline** (670, `clamp(2.8rem, 5vw, 5.2rem)`, `.98): Section statements.
-- **Title** (680, `1.45rem-2rem`, `.98): Workflow and setup titles.
-- **Body** (400, `1rem`, `1.5-1.8`): Explanatory copy with a comfortable measure.
-- **Label** (700, `.72rem`, `.1em`, uppercase): Navigation, setup state, and small UI context.
-
-## Layout
-
-The page uses a fluid `1180px` content cap and a generous vertical rhythm. The hero is a two-column composition with the promise on the left and the working product preview on the right. Later sections alternate between split reading layouts, a three-part workflow board, a privacy panel, and a two-column setup panel.
-
-At `900px` the page becomes a single column; at `680px` navigation becomes a compact menu, cards stack, and the app preview remains readable inside the viewport. The first viewport is intentionally spacious; the scroll rule invites the visitor into the longer story.
-
-## Elevation & Depth
-
-Depth is mostly tonal: the page background, notebook surface, and inset app preview do most of the work. Shadows are neutral black and short, used to separate the hero preview, setup console, and closing mark from the background. Pink glow is not used as a structural shadow.
-
-### Shadow Vocabulary
-
-- **Preview lift** (`0 20px 24px rgba(0,0,0,.3)`): separates the hero app preview from the page.
-- **Panel lift** (`0 18px 22px rgba(0,0,0,.24)`): gives the privacy console a little weight.
-- **Action lift** (`0 12px 22px rgba(0,0,0,.25)`): separates the primary CTA without changing its color.
-
-## Shapes
-
-Small controls use 5-7px corners; larger app and mark silhouettes use 15-19px corners. Borders are 1px and quiet. The visual language favors framed panels and inset surfaces over rounded card stacks or floating glass.
-
-## Components
-
-### Buttons
-
-- **Shape:** compact 7px corners.
-- **Primary:** Vylk Pink background, Night Ink text, `.78rem 1rem` padding.
-- **Hover / Focus:** darker pink hover state, short upward motion, and a visible high-contrast focus ring.
-- **Secondary:** text links use Paper Text with an underline and a small directional arrow.
-
-### Cards / Containers
-
-- **Corner Style:** 5px for panels, 15px for the hero app frame.
-- **Background:** Notebook Surface or the deeper `#101329` console surface.
-- **Shadow Strategy:** short neutral shadows only; refer to Elevation & Depth.
-- **Border:** 1px Notebook Line.
-- **Internal Padding:** 1rem for compact UI and 1.4-1.6rem for section panels.
-
-### Navigation
-
-Desktop navigation is a quiet inline row with one outlined GitHub action. On mobile it becomes an anchored menu panel with full-width links and the GitHub action at the bottom.
-
-### Product Preview
-
-The hero preview is a framed write/preview split with a note list, lightweight toolbar, saved status, and small callouts. It is an authored proof object, not a generic dashboard card.
-
-## Do's and Don'ts
-
-### Do:
-
-- **Do** show vylk doing the work within the first viewport.
-- **Do** explain ownership, offline work, encryption, and setup in everyday language before introducing terminal commands.
-- **Do** preserve the Default Dark palette and use the brighter pink tint only where text contrast needs it.
-- **Do** keep the page light enough to deploy independently; the deployment build resolves the application version once and the published site has no release-metadata request.
-
-### Don't:
-
-- **Don't** invent testimonials, customer logos, usage numbers, pricing tiers, or performance benchmarks.
-- **Don't** turn the page into a generic feature-card grid or an abstract "AI SaaS" hero.
-- **Don't** use the pink accent as a background wash or colored shadow system.
-- **Don't** rely on technical vocabulary without explaining it for a first-time visitor.
+- Preserve the incumbent layout and interactions when updating product copy.
+- Keep feature and security claims consistent with the application source.
+  E2EE is optional; do not imply it protects against a compromised live app,
+  hides all metadata, or supports plain HTTP on remote devices.
+- Do not invent benchmarks, customers, testimonials, collaboration, or releases.
+- Preserve keyboard access, visible focus, readable contrast, responsive
+  behavior, accessible headings, and reduced-motion support.
+- Keep text links discoverable; controls and command copy buttons remain
+  recognizably interactive. Check long feature text and inline code on mobile.
+- Author visuals in `style.css`, `interactions.css`, `install.css`, `mobile.css`,
+  and `docs/{style,setup}.css`; do not edit generated `dist` output.
+- The site stays independent of a running VYLK server. Resolve release versions
+  at build time, not through requests from each visitor's browser.

@@ -1,5 +1,6 @@
 .docs-main h4 { margin: 24px 0 12px; font-size: 16px; }
 .docs-main h3 { font-size: 22px; }
+.docs-main code { overflow-wrap: anywhere; }
 .command-list { display: grid; gap: 10px; margin: 22px 0; }
 .command-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 16px; border-radius: 6px; background: #1b1d1e; }
 .command-row code { color: #fff; font: 12px/1.7 "JetBrains Mono", monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -32,8 +33,9 @@
 .update-note { padding-top: 14px; border-top: 1px solid #cfd3d1; }
 .update-note b { color: #151719; }
 @media (max-width: 560px) {
-  .docs-nav nav { display: none; }
-  .docs-nav nav a:nth-child(3) { display: block; }
+  .docs-nav nav { display: flex; gap: 16px; }
+  .docs-nav nav a { display: none; }
+  .docs-nav nav a[href="api/"] { display: block; }
   .docs-os-tabs button { flex: 1; padding-inline: 8px; }
   .docs-main .method-tabs { gap: 0 14px; }
 }
