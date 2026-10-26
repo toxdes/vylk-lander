@@ -23,10 +23,15 @@ const { pathToFileURL } = require('node:url');
       // Place real crumpled notes at deterministic fixture positions. Input and
       // all subsequent motion, collisions, lid control, and scoring remain real.
       await page.evaluate(positions => {
+        // Viewport fixtures must not inherit the hero's stacking context:
+        // near-bin balls can otherwise sit behind the screenshot carousel.
+        const fixtureNotes = Array.from(document.querySelectorAll('.sticky-note'));
+        fixtureNotes.forEach(note => document.body.append(note));
         positions.forEach(([x, y], i) => {
-          const note = document.querySelectorAll('.sticky-note')[i];
+          const note = fixtureNotes[i];
           for (let c = 0; c < 5; c++) note.click();
           note.style.position = 'fixed';
+          note.style.zIndex = '10';
           note.style.left = x - 28 + 'px';
           note.style.top = y - 28 + 'px';
         });
@@ -42,6 +47,7 @@ const { pathToFileURL } = require('node:url');
       await page.waitForTimeout(500);
       const [x, y] = scenario.positions[0];
       await page.mouse.move(x, y);
+      assert.ok(await page.evaluate(([x, y]) => document.querySelector('.paper-ready').contains(document.elementFromPoint(x, y)), [x, y]), 'The fixture ball must receive pointer input');
       await page.mouse.down();
       await page.mouse.move(x + scenario.pull[0], y + scenario.pull[1], { steps: 8 });
       assert.equal(await page.locator('.game-target,.game-trajectory').count(), 0);

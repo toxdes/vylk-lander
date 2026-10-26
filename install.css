@@ -1,7 +1,7 @@
 .install { grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: clamp(40px, 7vw, 100px); }
 .install-title h2 { font-size: clamp(2.6rem, 4.8vw, 4.8rem); }
 .install-title > .setup-text-link { display: inline-block; margin-top: 24px; }
-.setup-text-link, .download-links a { color: #f3a6b8; text-decoration: underline; text-underline-offset: 4px; }
+.setup-text-link, .download-links a { color: #f3a6b8; text-underline-offset: 4px; }
 .setup-text-link:hover, .download-links a:hover { color: #fff; }
 .install-content { min-width: 0; border-top: 0; }
 .install .os-tabs { padding: 0; gap: 0; border-bottom: 1px solid #454b49; margin-bottom: 26px; }
@@ -29,7 +29,7 @@
 .install details { margin: 0 0 22px; padding: 14px 0; border-bottom: 1px solid #3f4442; }
 .install summary { cursor: pointer; color: #f3a6b8; font-size: 15px; font-weight: 500; }
 .install details[open] summary { margin-bottom: 18px; }
-.install details a, .setup-finish a { color: #f3a6b8; text-decoration: underline; text-underline-offset: 3px; }
+.install details a, .setup-finish a { color: #f3a6b8; text-underline-offset: 3px; }
 .setup-finish { margin-top: 24px; padding-top: 20px; border-top: 1px solid #454b49; }
 .install .setup-finish p { margin: 0; }
 .install code { font-family: "JetBrains Mono", monospace; }

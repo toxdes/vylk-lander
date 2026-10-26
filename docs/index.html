@@ -19,36 +19,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="setup.css">
+  <link rel="stylesheet" href="../site-nav.css">
 </head>
 <body>
   <header class="docs-nav">
     <a class="brand" href="../index.html"><img src="../assets/vylk-logo.webp" alt="" width="29" height="29"><span>VYLK</span></a>
-      <nav aria-label="Documentation navigation"><a href="../index.html">Home</a><a class="active" aria-current="page" href="#top">Docs</a><a href="api/">API reference</a><a href="https://github.com/toxdes/vylk">Source</a></nav>
+      <nav aria-label="Documentation navigation"><a href="../index.html#install">Install</a><a class="active" aria-current="page" href="#top">Docs</a><a href="api/">API reference</a><a href="../releases/">Releases</a><a href="https://github.com/toxdes/vylk">Source</a></nav>
   </header>
 
   <div class="docs-shell" id="top">
     <aside class="toc" aria-label="Documentation sections">
       <p>VYLK docs</p>
-      <a href="#start">Start here</a><a href="#install">Install</a><a href="#remote">Other devices</a><a href="#config">Configuration</a><a href="#features">Features</a><a href="#end-to-end-encryption">End-to-end encryption</a><a href="#security">Backups and safety</a><a href="#offline">Offline use</a><a href="#build">Build and test</a>
+      <a href="#start">Start here</a><a href="#install">Install</a><a href="#features">Write and customize</a><a href="#offline">Offline use</a><a href="#end-to-end-encryption">End-to-end encryption</a><a href="#security">Backups and safety</a><a href="#remote">Other devices</a><a href="#config">Configuration</a><a href="#build">Build and test</a>
     </aside>
 
     <main class="docs-main">
       <section class="docs-hero">
         <p class="path" aria-label="Breadcrumb"><a href="../index.html">VYLK</a><span aria-hidden="true"> / </span><span>Docs</span></p>
-        <h1>A small notebook<br>you can run yourself.</h1>
-        <p>VYLK is a lightweight Markdown editor for one person's notes, across their devices. It has live preview, offline-first sync, and optional end-to-end encryption. This guide covers the first run, daily use, and deployment.</p>
+        <h1>Install and use Vylk.</h1>
+        <p>VYLK is a single-user Markdown editor. Run it on your computer and open it in a browser.</p>
       </section>
 
       <section id="start">
-        <h2>Start here</h2>
-        <p>VYLK runs on a computer you control and opens in a browser. Linux packages are the easiest installation. Docker is convenient for a server, while the standalone binary and source build work when you want a smaller or more manual setup.</p>
-        <p><a href="../index.html#install">Choose an installation method</a>, start VYLK, then open <a href="http://localhost:8080">localhost:8080</a>. Sign in with the password you configured.</p>
-        <p>By default, Markdown notes are stored in <b>./notes</b> and the SQLite database is <b>./vylk.db</b>, relative to the directory where VYLK starts. Keep the process running while you use the app.</p>
+        <h2>First run</h2>
+
+        <p><a href="../index.html#install">Install VYLK</a>, then start it with your chosen password. Open <a href="http://localhost:8080">localhost:8080</a> and sign in.</p>
+        <p>Markdown notes default to <b>./notes</b> and the SQLite database to <b>./vylk.db</b>, relative to VYLK's startup directory. Keep VYLK running while using the app.</p>
       </section>
 
       <section id="install">
         <h2>Install VYLK</h2>
-        <p>Pick your computer, then choose the simplest way to install it. Each panel also shows the short update path for that method.</p>
+
         <div class="os-tabs docs-os-tabs" role="tablist" aria-label="Your operating system">
           <button type="button" class="active" data-os-tab="linux" role="tab" aria-selected="true">Linux</button>
           <button type="button" data-os-tab="windows" role="tab" aria-selected="false">Windows</button>
@@ -64,25 +65,25 @@
             <button type="button" data-linux-tab="source" role="tab" aria-selected="false">Build from source</button>
           </div>
           <div class="linux-panel active" data-linux-panel="ubuntu">
-            <h3>Ubuntu or Debian</h3><p>Add the shared Toxdes repository once, then install VYLK.</p>
+            <h3>Ubuntu or Debian</h3><p>Add the shared Toxdes repository once:</p>
             <div class="command-list"><div class="command-row"><code>sudo apt update &amp;&amp; sudo apt install -y ca-certificates curl gnupg &amp;&amp; curl -fsSL https://packages.toxdes.com/apt/pubkey.gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/toxdes-archive-keyring.gpg &amp;&amp; echo "deb [signed-by=/usr/share/keyrings/toxdes-archive-keyring.gpg] https://packages.toxdes.com/apt stable main" | sudo tee /etc/apt/sources.list.d/toxdes.list &amp;&amp; sudo apt update</code><button type="button" class="copy-button" aria-label="Copy repository setup command">Copy</button></div><div class="command-row"><code>sudo apt install vylk</code><button type="button" class="copy-button" aria-label="Copy install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
             <p class="update-note"><b>Update:</b> run <code>sudo apt update &amp;&amp; sudo apt upgrade vylk</code>, then restart VYLK.</p>
           </div>
           <div class="linux-panel" data-linux-panel="fedora">
-            <h3>Fedora</h3><p>Add the shared Toxdes repository once, then install VYLK.</p>
+            <h3>Fedora</h3><p>Add the shared Toxdes repository once:</p>
             <div class="command-list"><div class="command-row"><code>printf '%s\n' '[toxdes]' 'name=Toxdes' 'baseurl=https://packages.toxdes.com/rpm' 'enabled=1' 'gpgcheck=1' 'repo_gpgcheck=1' 'gpgkey=https://packages.toxdes.com/rpm/pubkey.gpg' | sudo tee /etc/yum.repos.d/toxdes.repo</code><button type="button" class="copy-button" aria-label="Copy Fedora repository command">Copy</button></div><div class="command-row"><code>sudo dnf install vylk</code><button type="button" class="copy-button" aria-label="Copy Fedora install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
             <p class="update-note"><b>Update:</b> run <code>sudo dnf upgrade vylk</code>, then restart VYLK.</p>
           </div>
           <div class="linux-panel" data-linux-panel="arch">
-            <h3>Arch Linux</h3><p>VYLK is available in the AUR.</p><div class="command-list"><div class="command-row"><code>yay -S vylk-bin</code><button type="button" class="copy-button" aria-label="Copy AUR install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div><p>To build from the current source instead, use <code>yay -S vylk-git</code>.</p>
+            <h3>Arch Linux (AUR)</h3><div class="command-list"><div class="command-row"><code>yay -S vylk-bin</code><button type="button" class="copy-button" aria-label="Copy AUR install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div><p>For current source: <code>yay -S vylk-git</code>.</p>
             <p class="update-note"><b>Update:</b> run <code>yay -Syu vylk-bin</code>, then restart VYLK.</p>
           </div>
           <div class="linux-panel" data-linux-panel="binary">
-            <h3>Standalone binary</h3><p>Download the archive for your processor, then put the binary on your <code>PATH</code>.</p><p class="download-links"><a data-release-asset="vylk_{version}_amd64.tar.gz" data-release-label="Download v{version} - AMD64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz">Download v__VYLK_VERSION__ - AMD64</a><a data-release-asset="vylk_{version}_arm64.tar.gz" data-release-label="Download v{version} - ARM64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___arm64.tar.gz">Download v__VYLK_VERSION__ - ARM64</a></p><div class="command-list"><div class="command-row"><code>curl -fsSL https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz | sudo tar xzC /</code><button type="button" class="copy-button" aria-label="Copy binary install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
+            <h3>Standalone binary</h3><p>Download your processor’s archive and put the binary on your <code>PATH</code>.</p><p class="download-links"><a data-release-asset="vylk_{version}_amd64.tar.gz" data-release-label="Download v{version} - AMD64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz">Download v__VYLK_VERSION__ - AMD64</a><a data-release-asset="vylk_{version}_arm64.tar.gz" data-release-label="Download v{version} - ARM64" href="https://packages.toxdes.com/releases/vylk___VYLK_VERSION___arm64.tar.gz">Download v__VYLK_VERSION__ - ARM64</a></p><div class="command-list"><div class="command-row"><code>curl -fsSL https://packages.toxdes.com/releases/vylk___VYLK_VERSION___amd64.tar.gz | sudo tar xzC /</code><button type="button" class="copy-button" aria-label="Copy binary install command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div>
             <p class="update-note"><b>Update:</b> download the newer archive, replace the binary, and restart VYLK. Your notes and database stay where they are.</p>
           </div>
           <div class="linux-panel" data-linux-panel="linux-docker">
-            <h3>Docker</h3><p>The image supports Linux AMD64 and ARM64. The named volume keeps your notes and database.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p>Open <a href="http://localhost:8080">localhost:8080</a> after the container starts.</p>
+            <h3>Docker</h3><p>Linux AMD64 and ARM64. Notes and database are stored in <code>vylk-data</code>.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p>Open <a href="http://localhost:8080">localhost:8080</a> after the container starts.</p>
             <p class="update-note"><b>Update:</b> pull the new image, remove the container, then run the same command again with the volume unchanged.</p>
           </div>
           <div class="linux-panel" data-linux-panel="source">
@@ -92,127 +93,127 @@
         </div>
         <div class="os-panel" data-os-panel="windows">
           <div class="method-tabs" role="tablist" aria-label="Windows installation method"><button type="button" class="active" data-windows-tab="binary" role="tab" aria-selected="true">Binary</button><button type="button" data-windows-tab="docker" role="tab" aria-selected="false">Docker</button></div>
-          <div class="platform-panel active" data-windows-panel="binary"><h3 id="windows">Windows binary</h3><p>Download the executable, then open PowerShell in the same folder.</p><p><a data-release-asset="vylk_windows_amd64_{version}.exe" data-release-label="Download v{version} - Windows AMD64" href="https://packages.toxdes.com/releases/vylk_windows_amd64___VYLK_VERSION___.exe">Download v__VYLK_VERSION__ - Windows AMD64</a></p><div class="command-list"><div class="command-row"><code>$env:VYLK_PASSWORD="replace-with-your-password"</code><button type="button" class="copy-button" aria-label="Copy Windows password command">Copy</button></div><div class="command-row"><code data-version-template>.\vylk_windows_amd64_{version}.exe</code><button type="button" class="copy-button" aria-label="Copy Windows start command">Copy</button></div></div><p class="update-note"><b>Update:</b> download the newer executable, replace the file in the same folder, and start it again. Keep the <code>notes</code> folder and <code>vylk.db</code> file.</p></div>
-          <div class="platform-panel" data-windows-panel="docker"><h3>Docker</h3><p>Use the Docker image. Your notes stay in a named volume.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the new image, remove the container, and run the same command again with <code>vylk-data</code> unchanged.</p></div>
+          <div class="platform-panel active" data-windows-panel="binary"><h3 id="windows">Windows binary</h3><p>Download the executable and open PowerShell in its folder.</p><p><a data-release-asset="vylk_windows_amd64_{version}.exe" data-release-label="Download v{version} - Windows AMD64" href="https://packages.toxdes.com/releases/vylk_windows_amd64___VYLK_VERSION___.exe">Download v__VYLK_VERSION__ - Windows AMD64</a></p><div class="command-list"><div class="command-row"><code>$env:VYLK_PASSWORD="replace-with-your-password"</code><button type="button" class="copy-button" aria-label="Copy Windows password command">Copy</button></div><div class="command-row"><code data-version-template>.\vylk_windows_amd64_{version}.exe</code><button type="button" class="copy-button" aria-label="Copy Windows start command">Copy</button></div></div><p class="update-note"><b>Update:</b> download the newer executable, replace the file in the same folder, and start it again. Keep the <code>notes</code> folder and <code>vylk.db</code> file.</p></div>
+          <div class="platform-panel" data-windows-panel="docker"><h3>Docker</h3><p>Notes and database are stored in <code>vylk-data</code>.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the new image, remove the container, and run the same command again with <code>vylk-data</code> unchanged.</p></div>
         </div>
         <div class="os-panel" data-os-panel="macos">
           <div class="method-tabs" role="tablist" aria-label="macOS installation method"><button type="button" class="active" data-macos-tab="homebrew" role="tab" aria-selected="true">Homebrew</button><button type="button" data-macos-tab="docker" role="tab" aria-selected="false">Docker</button><button type="button" data-macos-tab="zip" role="tab" aria-selected="false">Binary</button><button type="button" data-macos-tab="source" role="tab" aria-selected="false">Build from source</button></div>
-          <div class="platform-panel active" data-macos-panel="homebrew"><h3 id="macos">Homebrew</h3><p>Install from the Toxdes tap:</p><div class="command-list"><div class="command-row"><code>brew install toxdes/tap/vylk</code><button type="button" class="copy-button" aria-label="Copy Homebrew install command">Copy</button></div></div><p class="update-note"><b>Update:</b> run <code>brew update &amp;&amp; brew upgrade vylk</code>.</p></div>
-          <div class="platform-panel" data-macos-panel="zip"><h3>macOS binary</h3><p>Download the ZIP archive for your Mac, extract it, then start VYLK from Terminal.</p><p class="download-links"><a data-release-asset="vylk-{version}-macos-amd64.zip" data-release-label="Download v{version} - Intel" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-amd64.zip">Download v__VYLK_VERSION__ - Intel</a><a data-release-asset="vylk-{version}-macos-arm64.zip" data-release-label="Download v{version} - Apple Silicon" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-arm64.zip">Download v__VYLK_VERSION__ - Apple Silicon</a></p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy macOS start command">Copy</button></div></div><p class="update-note"><b>Update:</b> download the newer ZIP, replace the binary, and restart VYLK. Keep your notes folder and database.</p></div>
-          <div class="platform-panel" data-macos-panel="docker"><h3>Docker</h3><p>Use the Docker image. Your notes stay in a named volume.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the new image, remove the container, and run the same command again with <code>vylk-data</code> unchanged.</p></div>
-          <div class="platform-panel" data-macos-panel="source"><h3>Build from source</h3><p>Install Go, then build VYLK from the public source repository.</p><div class="command-list"><div class="command-row"><code>git clone https://github.com/toxdes/vylk.git &amp;&amp; cd vylk</code><button type="button" class="copy-button" aria-label="Copy clone command">Copy</button></div><div class="command-row"><code>go build -trimpath -ldflags="-s -w -X vylk/internal/server.version=$(cat VERSION)" -o vylk ./cmd/vylk</code><button type="button" class="copy-button" aria-label="Copy build command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the latest source, rebuild the binary, and restart it.</p></div>
+          <div class="platform-panel active" data-macos-panel="homebrew"><h3 id="macos">Homebrew</h3><div class="command-list"><div class="command-row"><code>brew install toxdes/tap/vylk</code><button type="button" class="copy-button" aria-label="Copy Homebrew install command">Copy</button></div></div><p class="update-note"><b>Update:</b> run <code>brew update &amp;&amp; brew upgrade vylk</code>.</p></div>
+          <div class="platform-panel" data-macos-panel="zip"><h3>macOS binary</h3><p>Download and extract the ZIP, then start VYLK from Terminal.</p><p class="download-links"><a data-release-asset="vylk-{version}-macos-amd64.zip" data-release-label="Download v{version} - Intel" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-amd64.zip">Download v__VYLK_VERSION__ - Intel</a><a data-release-asset="vylk-{version}-macos-arm64.zip" data-release-label="Download v{version} - Apple Silicon" href="https://packages.toxdes.com/releases/vylk-__VYLK_VERSION__-macos-arm64.zip">Download v__VYLK_VERSION__ - Apple Silicon</a></p><div class="command-list"><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy macOS start command">Copy</button></div></div><p class="update-note"><b>Update:</b> download the newer ZIP, replace the binary, and restart VYLK. Keep your notes folder and database.</p></div>
+          <div class="platform-panel" data-macos-panel="docker"><h3>Docker</h3><p>Notes and database are stored in <code>vylk-data</code>.</p><div class="command-list"><div class="command-row"><code data-version-template>docker run -d --name vylk -p 127.0.0.1:8080:8080 -e VYLK_PASSWORD='replace-with-your-password' -v vylk-data:/data toxdes/vylk:{version}</code><button type="button" class="copy-button" aria-label="Copy Docker run command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the new image, remove the container, and run the same command again with <code>vylk-data</code> unchanged.</p></div>
+          <div class="platform-panel" data-macos-panel="source"><h3>Build from source</h3><p>Requires Git and the Go version in <code>go.mod</code>.</p><div class="command-list"><div class="command-row"><code>git clone https://github.com/toxdes/vylk.git &amp;&amp; cd vylk</code><button type="button" class="copy-button" aria-label="Copy clone command">Copy</button></div><div class="command-row"><code>go build -trimpath -ldflags="-s -w -X vylk/internal/server.version=$(cat VERSION)" -o vylk ./cmd/vylk</code><button type="button" class="copy-button" aria-label="Copy build command">Copy</button></div><div class="command-row"><code>VYLK_PASSWORD='replace-with-your-password' ./vylk</code><button type="button" class="copy-button" aria-label="Copy start command">Copy</button></div></div><p class="update-note"><b>Update:</b> pull the latest source, rebuild the binary, and restart it.</p></div>
         </div>
-      </section>
-
-      <section id="remote">
-        <h2>Use your other devices</h2>
-        <p>VYLK listens on port 8080 by default. For an unencrypted instance, you can open the host computer's local IP address on a trusted network; the host firewall must allow the connection. Plain HTTP does not protect your password or notes in transit.</p>
-        <p>For encrypted notes, use HTTPS even on your local network. HTTP on a LAN address such as <code>http://192.168.1.10:8080</code> is not a secure browser context and cannot unlock the vault. HTTP on <code>localhost</code> or a loopback address works on the machine running VYLK. <a href="#end-to-end-encryption">Read the encryption setup requirements</a>.</p>
-        <p>Put VYLK behind an HTTPS reverse proxy with a certificate trusted by each device. VYLK does not issue certificates or serve HTTPS itself. HTTPS is also needed for service workers and PWA installation, except on localhost. The Docker examples bind to localhost; expose the service through your reverse proxy for other devices.</p>
-        <p>Sign in online once on each device before relying on offline access. Keep password protection enabled and use <code>VYLK_TRUST_PROXY=1</code> only when a trusted proxy supplies the forwarding headers.</p>
-      </section>
-
-      <section id="config">
-        <h2>Configuration</h2>
-        <p>VYLK uses environment variables. The server password also accepts <code>VYLK_PASSWORD_FILE=/run/secrets/vylk_password</code> for Docker and other secret managers. Enable E2EE in the app; its passphrase and recovery key are not server environment variables.</p>
-        <div class="table-wrap"><table><caption class="visually-hidden">VYLK configuration variables</caption><thead><tr><th scope="col">Variable</th><th scope="col">Default</th><th scope="col">Purpose</th></tr></thead><tbody>
-          <tr><td>VYLK_PASSWORD</td><td>none</td><td>Required before E2EE is enabled. After conversion, the vault passphrase or recovery key signs you in; keeping this server password enables a destructive new-vault reset, not recovery of old notes.</td></tr>
-          <tr><td>VYLK_PASSWORD_FILE</td><td>unset</td><td>Read the initial server password from a secret file instead of placing it directly in an environment variable.</td></tr>
-          <tr><td>PORT</td><td>8080</td><td>HTTP listen port.</td></tr>
-          <tr><td>VYLK_DIR</td><td>./notes</td><td>Directory containing plaintext Markdown files or encrypted vault note files.</td></tr>
-          <tr><td>VYLK_DB</td><td>./vylk.db</td><td>SQLite database path for metadata, sync state, and encrypted vault key wrappers. Back it up together with the notes directory.</td></tr>
-          <tr><td>VYLK_APP_NAME</td><td>VYLK</td><td>Server-wide app and PWA display name. Restart after changing it.</td></tr>
-          <tr><td>VYLK_TRUST_PROXY</td><td>unset</td><td>Set to <code>1</code> only behind a trusted TLS-terminating proxy.</td></tr>
-          <tr><td>VYLK_REQUIRE_STRONG_PASSWORDS</td><td>false</td><td>Set to <code>true</code> or <code>1</code> to require a strong server password and tell browsers to enforce strong vault passphrases.</td></tr>
-          <tr><td>VYLK_DISABLE_VAULT_CHANGES</td><td>false</td><td>Set to <code>true</code> or <code>1</code> for a shared demo. The API rejects encryption setup, passphrase/recovery-key changes, vault reset, and device revocation. Notes and sign-in still work; this does not turn off an existing encrypted vault.</td></tr>
-          <tr><td>VYLK_NO_BROWSER</td><td>unset</td><td>Set to <code>1</code>, or use <code>--no-browser</code>, to skip best-effort browser opening on startup.</td></tr>
-          <tr><td>ARTIFICIAL_RTT_DELAY_MS</td><td>0</td><td>Development-only request delay. Do not enable it in production.</td></tr>
-        </tbody></table></div>
-        <h3>A practical local setup</h3>
-        <div class="command-list"><div class="command-row"><code>VYLK_PASSWORD=change-this PORT=8080 VYLK_DIR=./notes VYLK_DB=./vylk.db ./vylk</code><button type="button" class="copy-button" aria-label="Copy local configuration command">Copy</button></div></div>
       </section>
 
       <section id="features">
-        <h2>Features</h2>
+        <h2>Write and customize</h2>
         <div class="feature-list">
-          <div><h3>Markdown and live preview</h3><p>Write Markdown, use the formatting toolbar, and see the rendered result beside the editor. Cursor-position highlighting connects source text to the preview.</p></div>
-          <div><h3>Focused editing</h3><p>Use a resizable split view, editor-only or preview-only view, or Zen mode for a quiet writing page. Caret-following scroll eases as you type and respects reduced motion.</p></div>
-          <div><h3>Interactive preview</h3><p>Check tasks, edit Markdown blocks, and drag blocks to rearrange them without leaving the preview. On mobile, selected blocks use a fixed action tray.</p></div>
-          <div><h3>Configurable interface</h3><p>Choose themes, fonts, content widths, autosave, toolbar and save-button visibility, and your starting view. Appearance's Reduce motion setting can follow your system, always reduce motion, or never reduce motion.</p></div>
-          <div><h3>Keyboard shortcuts</h3><p>In the editor, use <code>Ctrl+1</code> for write view, <code>Ctrl+2</code> for preview, <code>Ctrl+3</code> for split view, and <code>Ctrl+4</code> for Zen. On macOS, use Command instead of Ctrl. Customize bindings in Preferences → Shortcuts; the default sequence prefix is <code>Ctrl+E</code>.</p></div>
-          <div><h3>Offline-first notes</h3><p>After the first online sign-in, the installed app caches its shell and notes, stores edits in IndexedDB, and synchronizes when the connection returns.</p></div>
-          <div><h3>Your devices</h3><p>Use desktop and mobile browsers or install the PWA. Encryption unlocks are remembered across tabs and refreshes. Preferences lists browser profiles so you can sign out another device.</p></div>
-          <div><h3>End-to-end encryption</h3><p>Optionally encrypt note titles, tags, bodies, and offline edits on your device before storage or sync. A passphrase or 24-word recovery key unlocks your vault. <a href="#end-to-end-encryption">Understand setup and recovery</a>.</p></div>
-          <div><h3>Storage you control</h3><p>Without E2EE, notes are Markdown files with SQLite metadata. With E2EE, the server stores encrypted note bodies and encrypted titles/tags. Back up the database and notes directory together.</p></div>
+          <div><h3>Markdown and live preview</h3><p>Write Markdown or use the toolbar. Live preview shows the result beside your text; cursor-position highlighting connects the two.</p></div>
+          <div><h3>Zen writing</h3><p>Zen renders completed bold, italic, strikethrough, inline code, and Markdown links as you type. Unfinished syntax stays as typed. Select text for the compact toolbar; notes remain Markdown.</p><p>Click a rendered link and choose <b>Edit link</b> to change its URL. Apply an empty URL to remove the link but keep its label; click away to cancel. Switch to Write or Split to inspect the source.</p></div>
+          <div><h3>Writing and reading views</h3><p>Choose editor-only, preview-only, resizable Split, or distraction-free Zen. Switching views focuses the visible pane. Cursor-following and selection scrolling stay gradual; Preferences sections switch instantly, and dialogs follow your motion setting.</p></div>
+          <div><h3>Interactive preview</h3><p>In the preview, check tasks, edit Markdown blocks, or drag them into order. On mobile, selected blocks show a fixed action tray.</p></div>
+          <div><h3>Preferences</h3><p>Set themes, fonts, page width, autosave, toolbar and Save button visibility, and your starting view. <b>Appearance → Reduce motion</b> can follow your system, always reduce motion, or never reduce it.</p></div>
+          <div><h3>Keyboard shortcuts</h3><p>In the editor: <code>Ctrl+1</code> opens Write, <code>Ctrl+2</code> Preview, <code>Ctrl+3</code> Split, and <code>Ctrl+4</code> Zen. On macOS, use Command. Customize keys in <b>Preferences → Shortcuts</b>; sequences default to the <code>Ctrl+E</code> prefix.</p></div>
         </div>
+        <p>Encryption: <a href="#end-to-end-encryption">setup and recovery</a>.</p>
         <h3>First-run defaults</h3>
-        <p>New accounts open notes in write view, with interactive preview and the formatting toolbar enabled. Automatic saving is on and the manual Save button is hidden. Zen uses Inter at 125%, with the title, word count, and view switcher visible. Saved preferences are preserved when you upgrade.</p>
-      </section>
-
-      <section id="end-to-end-encryption">
-        <h2>End-to-end encryption</h2>
-        <p>E2EE is optional. Your browser encrypts note titles, tags, bodies, and pending offline edits before sending them to the server or storing them locally. The server stores ciphertext and wrapped keys; it never receives your vault passphrase or recovery words.</p>
-        <h3>HTTPS first</h3>
-        <p>Open VYLK over HTTPS, or use <code>http://localhost:8080</code> on the machine running it. Your browser must report a secure context for its cryptography APIs. Plain HTTP on a LAN IP does not qualify, even on a network you trust.</p>
-        <div class="callout"><strong>Can't sign in to an encrypted instance?</strong><p>If the login screen says encryption requires HTTPS, use the instance's HTTPS address with a trusted certificate. On the host computer, localhost also works. Existing signed-in pages opened in an insecure context are returned to the login screen with this notice; bypassing the notice does not enable browser cryptography.</p></div>
-        <h3>Enable encryption</h3>
-        <ol>
-          <li>Back up <code>VYLK_DB</code> and <code>VYLK_DIR</code> together. Sign in with your current server password and open <b>Preferences → Encryption</b>.</li>
-          <li>Choose a vault passphrase. Download or write down the numbered 24-word recovery key and store it somewhere safe, separate from the server.</li>
-          <li>Confirm all 24 words one at a time while the original list is hidden, then acknowledge the warning about losing access. Bulk pasting is intentionally unavailable to encourage keeping a separate copy.</li>
-          <li>Keep the page open while VYLK encrypts and verifies existing notes, converts local offline edits, and switches the server to encrypted storage. Note writes pause during conversion.</li>
-          <li>After conversion, restart the server to release plaintext still in the old process's memory. Update and unlock your other devices to convert their local caches too.</li>
-        </ol>
-        <p>If conversion is interrupted, reopen setup with the original server password, vault passphrase, and recovery key to resume. A device you have not reopened may still contain its earlier plaintext cache.</p>
-        <h3>Passphrase and recovery key</h3>
-        <p>After conversion, your vault passphrase or recovery key signs you in and unlocks notes. The old <code>VYLK_PASSWORD</code> no longer unlocks the encrypted vault. Recovery downloads are named <code>vylk-recovery-key-YYYYMMDDHHMM.txt</code>; anyone with that key can unlock the vault, so treat the file like a password.</p>
-        <p>In <b>Preferences → Encryption</b>, verify your current passphrase or recovery key before choosing a new passphrase or replacing the recovery key. Changing the passphrase offers <b>Sign out other devices</b>, enabled by default. Replacing the recovery key revokes other sessions. The current browser signs in again automatically.</p>
-        <div class="callout"><strong>Keep a separate recovery copy.</strong><p>If you lose both the passphrase and recovery key, VYLK cannot recover your encrypted notes. Backups alone cannot unlock them. Keeping <code>VYLK_PASSWORD</code> configured offers a destructive reset to a new empty vault, not access to the old notes. Old ciphertext is archived on the server for 30 days, but still needs its original secret to decrypt.</p></div>
-        <h3>Remembered browsers and devices</h3>
-        <p>Signing in remembers a non-extractable browser key so other tabs, refreshes, app updates, and later visits do not require another unlock while server access remains valid. Anyone using that browser profile can read your cached notes. Sign out on shared devices: this forgets the remembered key but retains encrypted pending edits for your next unlock.</p>
-        <p><b>Preferences → Account → Devices</b> groups tabs from one browser profile as one device. Signing out a device revokes its server sessions. Offline devices detect revocation when they reconnect; revocation cannot erase their cached notes or keys they already possess.</p>
-        <h3>What encryption does and does not cover</h3>
-        <p>Argon2id derives a wrapping key from the passphrase; a random vault key encrypts notes with AES-256-GCM. The server still sees note IDs, revisions, timestamps, pin state, preferences, and sync activity. Search, tag filtering, and conflict resolution run on unlocked devices.</p>
-        <p>Use a trusted deployment and HTTPS. A compromised server can replace the web app and steal secrets at unlock, or use a remembered key on your next visit. Encryption does not detect a server replaying older valid ciphertext. Changing a passphrase or recovery key rewraps the same vault key; it does not revoke a key or old wrapped-key copy that has already been stolen.</p>
-        <p>A shared demo can keep the encryption UI explorable while rejecting all vault changes at the API with <code>VYLK_DISABLE_VAULT_CHANGES=true</code>. That flag freezes vault configuration, not note editing, and does not disable an already-encrypted vault. Startup refuses it during an unfinished encryption migration.</p>
-      </section>
-
-      <section id="security">
-        <h2>Backups and safety</h2>
-        <p>Stop VYLK before making a matched copy of <code>VYLK_DB</code> and <code>VYLK_DIR</code>, or use a consistent backup method that captures them together. For encrypted notes, keep the passphrase or recovery key separately. Restarting with the same matched data and valid credentials resumes the instance; neither the database nor notes directory alone is a complete backup.</p>
-        <p>Enabling E2EE removes the active plaintext storage and its temporary conversion backup, but cannot erase old external backups, SQLite migration snapshots, unopened browser caches, filesystem snapshots, or freed disk blocks. Review those copies under your backup policy.</p>
-        <h3>Upgrading from server-side file encryption</h3>
-        <p>The older server-side encryption feature and its environment variables have been removed. Export those notes as plaintext using the previous VYLK version before upgrading, then enable E2EE in the app if desired. Removed settings and recognized encrypted files stop startup safely. The oldest ciphertext format has no identifying header: removing its settings does not decrypt the files.</p>
-        <h3>Migration backups</h3>
-        <p>Before a pending database migration, VYLK creates a consistent SQLite snapshot beside the database. The three newest <code>*.pre-migration-*.db</code> snapshots are retained. Keep roughly one extra database-sized block of free space.</p>
+        <p>New accounts start in Write, with interactive preview, toolbar, and autosave on; manual Save button hidden. <b>Zen:</b> Inter at 125%, with title, word count, and view switcher visible. Upgrades keep saved preferences.</p>
       </section>
 
       <section id="offline">
         <h2>Offline use and sync</h2>
-        <p>Sign in once while online, then install VYLK as a PWA if your browser supports it. You can reopen it without a connection, edit or delete notes, and continue working. Changes wait in the browser's IndexedDB and synchronize when connectivity returns.</p>
-        <p>While the app is open, an authenticated event stream watches for changes. A 25-second heartbeat drives the Online or Offline indicator. A missing heartbeat for 70 seconds is treated as offline; reconnection performs a full cache reconciliation before replaying local work.</p>
-        <p>If two devices change the same note, VYLK attempts a three-way merge. Non-overlapping line edits and one-sided title or tag changes merge automatically. Ambiguous overlaps open a conflict resolver that preserves both versions and lets you edit the result.</p>
-        <p>Sign-out retains cached notes and pending edits for your next sign-in. Without E2EE, that browser storage is plaintext; signing out does not erase it. With E2EE, local notes and queued edits are encrypted, and sign-out forgets the remembered unlock key. When the server is unavailable, the current device's Sign out action locks this browser locally but cannot revoke its server session.</p>
-        <p>The status badge says <b>Saving</b> while changes await server acknowledgement and <b>Saved</b> after they reach the server. <b>Offline</b> means edits remain on this device until reconnection. Do not clear browser storage while you have pending work.</p>
-        <p>If the server database is replaced, VYLK pauses sync and asks you to choose <b>Keep changes</b> or <b>Switch</b>. Keep changes preserves local work; restore the previous matched database and notes directory, then reload. Switch permanently discards this browser's cached notes and pending edits, loads the replacement instance, and asks you to sign in again. Restoring an older backup of the same database keeps its identity; this check is not rollback detection.</p>
+        <p>Sign in online once per device. Install VYLK as a PWA if supported. The installed app caches its shell and notes; offline edits and deletions wait in browser IndexedDB and sync when you reconnect.</p>
+        <details class="docs-details"><summary>Connection details</summary><p>While open, an authenticated event stream watches for changes. A 25-second heartbeat updates Online/Offline status; 70 seconds without one means offline. On reconnect, VYLK reconciles the full cache before replaying local work.</p></details>
+        <p>When two devices edit one note, VYLK attempts a three-way merge. Separate line edits and one-sided title or tag changes merge automatically. Ambiguous overlaps open a conflict resolver that keeps both versions and lets you edit the result.</p>
+        <p>Sign-out retains cached notes and pending edits for your next sign-in. Without encryption, browser storage stays plaintext; signing out does not erase it. With encryption, notes and queued edits stay encrypted and the remembered key is forgotten. Offline Sign out locks this browser but cannot revoke its server session.</p>
+        <ul><li><b>Saving:</b> waiting for server acknowledgement.</li><li><b>Saved:</b> changes reached the server.</li><li><b>Offline:</b> edits remain on this device until reconnection.</li></ul><p>Do not clear browser storage with pending work.</p>
+        <h3>If the server database changes</h3><p>Sync pauses. Choose:</p><ul><li><b>Keep changes</b> preserves local work. Restore the previous matching database and notes directory, then reload.</li><li><b>Switch</b> permanently discards this browser’s cached notes and pending edits, loads the replacement, and requires sign-in.</li></ul><p>An older backup of the same database keeps its identity; this check cannot detect rollback.</p>
+      </section>
+
+      <section id="end-to-end-encryption">
+        <h2>End-to-end encryption</h2>
+        <p>Encryption is optional. Your browser encrypts titles, tags, bodies, and pending offline edits before sending or storing them. The server holds ciphertext and wrapped keys, never your passphrase or recovery words.</p>
+        <h3>HTTPS first</h3>
+        <p>Use HTTPS or <code>http://localhost:8080</code> on the host. Browser cryptography requires a secure context. Plain HTTP on a LAN IP does not qualify, even on a trusted network.</p>
+        <div class="callout"><strong>Can't sign in to an encrypted instance?</strong><p>If login says encryption requires HTTPS, use the HTTPS address with a trusted certificate, or localhost on the host. Already signed-in insecure pages return to login with this notice; bypassing it cannot enable browser cryptography.</p></div>
+        <h3>Enable encryption</h3>
+        <ol>
+          <li>Back up <code>VYLK_DB</code> and <code>VYLK_DIR</code> together. Sign in with the server password; open <b>Preferences → Encryption</b>.</li>
+          <li>Choose a passphrase. Download or write down the numbered 24-word recovery key; store it safely, separate from the server.</li>
+          <li>With the original list hidden, confirm all 24 words individually and acknowledge the access-loss warning. Bulk paste is disabled to encourage a separate recovery copy.</li>
+          <li>Keep setup open while VYLK encrypts and verifies notes, converts local offline edits, and switches server storage. Note writes pause during conversion.</li>
+          <li>Restart the server to release plaintext from the old process's memory. Update and unlock other devices to convert their local caches.</li>
+        </ol>
+        <p>To resume an interrupted conversion, reopen setup with the original server password, vault passphrase, and recovery key. Unopened devices may still hold plaintext caches.</p>
+        <h3>Passphrase and recovery key</h3>
+        <p>After conversion, sign in and unlock with your passphrase or recovery key; <code>VYLK_PASSWORD</code> no longer unlocks notes. Recovery downloads use <code>vylk-recovery-key-YYYYMMDDHHMM.txt</code>. Anyone with the key can unlock your vault: protect it like a password.</p>
+        <p>In <b>Preferences → Encryption</b>, verify your current passphrase or recovery key to change either. Passphrase changes offer <b>Sign out other devices</b>, on by default. Replacing the recovery key revokes other sessions. This browser signs in again automatically.</p>
+        <div class="callout"><strong>Keep a separate recovery copy.</strong><p>If you lose both the passphrase and recovery key, VYLK cannot recover your notes—even from a backup. Retaining <code>VYLK_PASSWORD</code> permits a destructive reset to an empty vault. Old ciphertext is archived for 30 days on the server; unlocking it still requires the original secret.</p></div>
+        <h3>Remembered browsers and devices</h3>
+        <p>Sign-in remembers a non-extractable browser key across tabs, refreshes, updates, and later visits while server access stays valid. Anyone using that browser profile can read cached notes. Sign out on shared devices: this forgets the key but keeps encrypted pending edits for your next unlock.</p>
+        <p><b>Preferences → Account → Devices</b> treats each browser profile, including its tabs, as one device. Signing it out revokes its server sessions; offline devices learn this when reconnecting. Revocation cannot erase their cached notes or existing keys.</p>
+        <h3>What encryption does and does not cover</h3>
+        <p>Argon2id derives a passphrase wrapping key; a random vault key encrypts notes with AES-256-GCM. The server still sees IDs, revisions, timestamps, pins, preferences, and sync activity. Search, tag filtering, and conflict resolution run on unlocked devices.</p>
+        <p>Use HTTPS and a trusted deployment. A compromised server can replace the app to steal secrets at unlock or use a remembered key on your next visit. Encryption cannot detect replayed older valid ciphertext. Changing a passphrase or recovery key rewraps the same vault key; it does not revoke a key or old wrapped-key copy already stolen.</p>
+
+      </section>
+
+      <section id="security">
+        <h2>Backups and safety</h2>
+        <p>Without encryption, notes are Markdown files; SQLite holds their metadata. With encryption, the server stores encrypted note bodies, titles, and tags. Stop VYLK and copy <code>VYLK_DB</code> and <code>VYLK_DIR</code> together, or use a consistent backup method that captures both. Neither alone is a complete backup. Keep encrypted notes’ passphrase or recovery key separately. Restart with matching data and valid credentials to resume the instance.</p>
+        <p>Enabling encryption removes active plaintext storage and the temporary conversion backup. It cannot erase old external backups, SQLite migration snapshots, unopened browser caches, filesystem snapshots, or freed disk blocks. Review those copies under your backup policy.</p>
+        <h3>Upgrading from server-side file encryption</h3>
+        <p>Legacy server-side encryption and its settings have been removed. Before upgrading, export those notes as plaintext with the previous VYLK version; then optionally enable E2EE in the app. Removed settings or recognized encrypted files stop startup safely. The oldest ciphertext has no identifying header: removing settings does not decrypt it.</p>
+        <h3>Migration backups</h3>
+        <p>Before a pending database migration, VYLK saves a consistent SQLite snapshot beside the database. It retains the three newest <code>*.pre-migration-*.db</code> snapshots. Allow roughly one extra database-sized block of free space.</p>
+      </section>
+
+      <section id="remote">
+        <h2>Connect another device</h2>
+        <p>Use a desktop or mobile browser, or install the PWA.</p>
+        <p>VYLK listens on port 8080 by default. For an unencrypted instance, open the host's local IP address on a trusted network and allow the connection through its firewall. Plain HTTP exposes passwords and notes in transit.</p>
+        <p>Encrypted notes require HTTPS, even on a local network. A LAN address such as <code>http://192.168.1.10:8080</code> is not a secure browser context and cannot unlock notes. HTTP on <code>localhost</code> or loopback works on the host. <a href="#end-to-end-encryption">Encryption requirements</a>.</p>
+        <p>Use an HTTPS reverse proxy with a certificate trusted by every device. VYLK neither serves HTTPS nor issues certificates. Service workers and PWA installation require HTTPS; localhost is exempt. The Docker examples bind to localhost: use your proxy to reach them from other devices.</p>
+        <p>Sign in online once per device before relying on offline access. Keep password protection enabled. Set <code>VYLK_TRUST_PROXY=1</code> only when a trusted proxy supplies forwarding headers.</p>
+      </section>
+
+      <section id="config">
+        <h2>Configuration</h2>
+        <p>Set environment variables before starting VYLK. For Docker or secret managers, <code>VYLK_PASSWORD_FILE=/run/secrets/vylk_password</code> reads the server password from a file. Enable encryption in the app; its passphrase and recovery key are not server settings.</p>
+        <div class="table-wrap"><table><caption class="visually-hidden">VYLK configuration variables</caption><thead><tr><th scope="col">Variable</th><th scope="col">Default</th><th scope="col">Purpose</th></tr></thead><tbody>
+          <tr><td>VYLK_PASSWORD</td><td>none</td><td>Required before encryption. Afterward, sign in with the vault passphrase or recovery key. Retaining this password permits a destructive reset to an empty vault; it cannot recover old notes.</td></tr>
+          <tr><td>VYLK_PASSWORD_FILE</td><td>unset</td><td>Read the initial server password from a secret file instead of an environment variable.</td></tr>
+          <tr><td>PORT</td><td>8080</td><td>HTTP listen port.</td></tr>
+          <tr><td>VYLK_DIR</td><td>./notes</td><td>Directory for Markdown notes or encrypted note files.</td></tr>
+          <tr><td>VYLK_DB</td><td>./vylk.db</td><td>SQLite database: metadata, sync state, and wrapped vault keys. Back up with the notes directory.</td></tr>
+          <tr><td>VYLK_APP_NAME</td><td>VYLK</td><td>App and PWA name for this server. Restart to apply.</td></tr>
+          <tr><td>VYLK_TRUST_PROXY</td><td>unset</td><td>Set to <code>1</code> only behind a trusted TLS-terminating proxy.</td></tr>
+          <tr><td>VYLK_REQUIRE_STRONG_PASSWORDS</td><td>false</td><td>Use <code>true</code> or <code>1</code> to require strong server passwords and have browsers enforce strong vault passphrases.</td></tr>
+          <tr><td>VYLK_DISABLE_VAULT_CHANGES</td><td>false</td><td>Use <code>true</code> or <code>1</code> for shared demos: block encryption setup, passphrase/recovery-key changes, vault reset, and device revocation at the API. Notes, sign-in, and existing encryption still work.</td></tr>
+          <tr><td>VYLK_NO_BROWSER</td><td>unset</td><td>Use <code>1</code> or <code>--no-browser</code> to skip the startup browser-opening attempt.</td></tr>
+          <tr><td>ARTIFICIAL_RTT_DELAY_MS</td><td>0</td><td>Request delay for development only; keep disabled in production.</td></tr>
+        </tbody></table></div>
+        <p>With <code>VYLK_DISABLE_VAULT_CHANGES=true</code>, encryption settings remain viewable. Startup refuses this setting during an unfinished encryption migration.</p>
+        <h3>Local setup example</h3>
+        <div class="command-list"><div class="command-row"><code>VYLK_PASSWORD=change-this PORT=8080 VYLK_DIR=./notes VYLK_DB=./vylk.db ./vylk</code><button type="button" class="copy-button" aria-label="Copy local configuration command">Copy</button></div></div>
       </section>
 
       <section id="build">
         <h2>Build and test</h2>
-        <p>Build one local binary with the version embedded from <code>VERSION</code>:</p>
+        <p>Local binary, with version from <code>VERSION</code>:</p>
         <div class="command-list"><div class="command-row"><code>go build -trimpath -ldflags="-s -w -X vylk/internal/server.version=$(cat VERSION)" -o vylk ./cmd/vylk</code><button type="button" class="copy-button" aria-label="Copy Go build command">Copy</button></div></div>
-        <p>Build all supported binaries and platform archives with:</p>
+        <p>All supported binaries and platform archives:</p>
         <div class="command-list"><div class="command-row"><code>./build.py</code><button type="button" class="copy-button" aria-label="Copy build script command">Copy</button></div></div>
-        <p>Build the Linux packages and archives with Yesb:</p>
+        <p>Linux packages and archives (Yesb):</p>
         <div class="command-list"><div class="command-row"><code>./yesb/build_all.py</code><button type="button" class="copy-button" aria-label="Copy Yesb build command">Copy</button></div></div>
-        <p>Use the Go version declared in <code>go.mod</code> and Bun for frontend tooling. Install dependencies, then run the Go, frontend, and browser suites. Browser tests require Chrome, or <code>CHROME_PATH</code> pointing to a compatible binary.</p>
+        <p>Tests require the Go version in <code>go.mod</code> and Bun. Browser tests require Chrome or <code>CHROME_PATH</code> pointing to a compatible browser. Install dependencies and run:</p>
         <div class="command-list"><div class="command-row"><code>bun ci</code><button type="button" class="copy-button" aria-label="Copy dependency install command">Copy</button></div><div class="command-row"><code>go test ./...</code><button type="button" class="copy-button" aria-label="Copy Go test command">Copy</button></div><div class="command-row"><code>go tool staticcheck ./...</code><button type="button" class="copy-button" aria-label="Copy Staticcheck command">Copy</button></div><div class="command-row"><code>bun run test:frontend</code><button type="button" class="copy-button" aria-label="Copy frontend test command">Copy</button></div><div class="command-row"><code>bun run test:browser</code><button type="button" class="copy-button" aria-label="Copy browser test command">Copy</button></div></div>
       </section>
 
     </main>
   </div>
 
-  <footer class="docs-footer"><span>VYLK</span><span>Copyright 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span><a href="https://github.com/toxdes/vylk">View on GitHub</a></footer>
+  <footer class="docs-footer"><span>VYLK</span><span class="footer-copyright">Copyright 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span></footer>
   <script src="../version.js"></script>
   <script src="../script.js"></script>
 </body>

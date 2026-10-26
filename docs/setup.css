@@ -39,3 +39,9 @@
   .docs-os-tabs button { flex: 1; padding-inline: 8px; }
   .docs-main .method-tabs { gap: 0 14px; }
 }
+
+/* Optional connection internals stay available without interrupting the guide. */
+.docs-details { margin-bottom: 18px; }
+.docs-details summary { color: var(--red); font-weight: 500; cursor: pointer; }
+.docs-details[open] summary { margin-bottom: 12px; }
+.docs-details summary:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }

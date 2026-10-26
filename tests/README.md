@@ -15,6 +15,7 @@ From the lander repository root:
 ```sh
 bun test tests/physics.test.cjs
 bun tests/browser.cjs
+bun tests/arrows.cjs
 bun tests/round.cjs
 bun tests/rebounds.cjs
 bun tests/install.cjs
@@ -64,3 +65,18 @@ external deployment is required. Screenshots are written under `/tmp`.
 `api.cjs` requires a successful build. It checks every API operation, shared
 typography and colors, keyboard navigation, and desktop/mobile overflow.
 Python tests cover rendering, escaping, release selection, and failed builds.
+
+`bun tests/announcements.cjs` checks the generated Releases page on desktop
+and mobile, including navigation, original description text, source links,
+keyboard access, and overflow. Build first using the production source or
+`VYLK_API_SOURCE`. Python tests cover version filtering, metadata validation,
+escaping, and preservation of previous output when release history fails.
+
+The Releases page hides PR dates/source metadata, generic Changes headings, and
+previous-release introductions while preserving the original `releases.md`.
+The homepage banner links to the newest included version, marked Latest.
+
+`arrows.cjs` checks hover entry/exit geometry and the transition's final pixels
+at desktop/mobile sizes and 100%, 125%, and 200% display scaling. It also checks
+reduced motion. The shaft must stay joined to the arrowhead without an endpoint
+rendering snap.

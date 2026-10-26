@@ -39,7 +39,22 @@ support the existing playful paper-ball interaction. Keep Caveat confined to
 that illustration; navigation, feature explanations, and setup use Rubik.
 
 Real desktop/mobile app screenshots appear in a separate carousel below the
-hero. The feature section pairs a large heading with ruled rows rather than
+hero. Keep captures genuine, use example notes, and preserve the app’s own
+interface. A native disclosure beneath the carousel reveals one continuous
+walkthrough: find mixed notes by dashboard tags, organize tasks, write in Zen,
+share a Scratchpad, and keep editing through a real offline reload and reconnect.
+Keep it within the same stage, separated by a fine rule. Use native video controls
+with preload disabled and require an action to play; pause it when closed or the
+page is hidden. Record real app behavior, visible font-size options, and a cursor
+that becomes a hand during drags. Present the roughly two-minute video at 1.5× speed
+on the approved lavender–peach gradient, inside a dark macOS-style window with a
+Vylk Dock icon and no menu bar. Introduce a notchless phone for sharing/offline use,
+matching its outer height to the desktop window. This framing belongs to the
+recording, not the site's paper-light visual system. Keep the disclosure label
+“Watch Vylk in use” and the video; omit the subtitle, description, and download
+link. Native controls remain usable without JavaScript.
+
+The feature section pairs a large heading with ruled rows rather than
 feature cards. The installation section uses a dark command surface, platform
 and method tabs, processor-specific downloads, and copy buttons. The closing
 statement uses a solid burgundy background and white text.

@@ -28,8 +28,7 @@
   .why { width: calc(100% - 48px); grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 64px; }
   .why h2, .install h2, .statement h2 { font-size: clamp(2.3rem, 7vw, 3.2rem); line-height: 1.08; letter-spacing: -.03em; }
   .why-heading p, .install-title p { max-width: 42ch; font-size: 16px; line-height: 1.6; }
-  .why-lines > div { grid-template-columns: minmax(0, 1fr); padding: 24px 0; }
-  .why-lines > div > span { display: none; }
+  .why-lines > div { padding: 24px 0; }
   .why-lines h3 { font-size: 21px; margin-bottom: 10px; }
   .why-lines p { font-size: 16px; line-height: 1.65; }
   .install { padding: 56px 24px; gap: 28px; }
@@ -43,7 +42,6 @@
   .install .copy-button { min-height: 44px; min-width: 56px; align-self: center; }
   .install summary { padding-block: 12px; line-height: 1.5; }
   .statement { padding: 64px 24px; }
-  .statement a { display: inline-flex; align-items: center; min-height: 44px; }
   footer { width: calc(100% - 48px); padding-block: 24px; gap: 12px; }
   footer a { display: inline-flex; align-items: center; min-height: 44px; }
 }
@@ -55,8 +53,8 @@
   .hero-notes { min-height: 600px; }
   .screen-stage { padding: 12px; }
   .screen-stage picture img { opacity: 1; }
-  .stage-label, .stage-bottom { font-size: 12px; line-height: 1.5; }
-  .stage-label span:last-child, .stage-bottom span:last-child { display: none; }
+  .stage-label { font-size: 12px; line-height: 1.5; }
+  .stage-label span:last-child { display: none; }
 }
 
 @media (max-width: 359px) {

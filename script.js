@@ -466,3 +466,31 @@
   window.addEventListener('load', scheduleRender, { once: true });
   scheduleRender();
 })();
+
+
+(function () {
+  var disclosures = document.querySelectorAll('[data-walkthrough]');
+  disclosures.forEach(function (disclosure) {
+    var video = disclosure.querySelector('video');
+    disclosure.addEventListener('toggle', function () {
+      if (!disclosure.open) {
+        video.pause();
+        return;
+      }
+      if (!video.getAttribute('src')) {
+        video.src = video.dataset.src;
+        video.load();
+      }
+    });
+    video.addEventListener('play', function () {
+      disclosures.forEach(function (other) {
+        if (other !== disclosure) other.querySelector('video').pause();
+      });
+    });
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      disclosures.forEach(function (disclosure) { disclosure.querySelector('video').pause(); });
+    }
+  });
+})();

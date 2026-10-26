@@ -1,0 +1,40 @@
+/* Release notes inherit the lander's paper, ink, Rubik, and ruled reading layout. */
+.releases-page .docs-shell { grid-template-columns: 190px minmax(0, 760px); gap: 80px; }
+.releases-page .docs-hero { padding-block: 72px 56px !important; }
+.releases-page h1 { font-size: clamp(2.5rem, 5.7vw, 4.8rem); line-height: 1.06; overflow-wrap: anywhere; }
+.releases-page h2 { font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.12; font-variant-numeric: tabular-nums; }
+.releases-page h2 a { color: var(--ink); font-weight: 500; text-decoration: none; }
+.releases-page .release { padding-block: 56px; }
+.releases-page .release h3 { margin-block: 32px 16px; font-size: 21px; }
+.releases-page .release h4 { font-size: 18px; }
+.releases-page .release p, .releases-page .release li { max-width: 70ch; overflow-wrap: anywhere; }
+.releases-page .release ul, .releases-page .release ol { padding-left: 1.5em; margin-block: 18px 28px; }
+.releases-page .release li { padding-left: .35em; margin-block: 12px; color: var(--muted); }
+.releases-page .release li::marker { color: var(--ink); font-variant-numeric: tabular-nums; }
+.releases-page code { font: .85em/1.6 "JetBrains Mono", monospace; overflow-wrap: anywhere; }
+.releases-page strong { color: var(--ink); font-weight: 600; }
+.releases-page a:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+.releases-page a[aria-current="page"] { color: var(--red); }
+.releases-page ::selection { background: var(--stage); color: var(--ink); }
+.releases-skip { position: absolute; top: -100px; left: 16px; padding: 12px 16px; background: var(--paper); z-index: 1; }
+.releases-skip:focus { top: 12px; }
+@media (max-width: 900px) {
+  .releases-page .docs-shell { grid-template-columns: 1fr; gap: 0; }
+  .releases-page .toc { gap: 4px 24px; }
+}
+@media (max-width: 560px) {
+  .releases-page .docs-nav { width: calc(100% - 32px); height: auto; min-height: 74px; gap: 8px 20px; flex-wrap: wrap; padding-block: 12px; }
+  .releases-page .docs-nav nav { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; }
+  .releases-page .docs-nav nav a { display: inline-flex; align-items: center; min-height: 44px; }
+  .releases-page .docs-hero { padding-block: 44px !important; }
+  .releases-page h1 { font-size: clamp(2rem, 8.8vw, 2.5rem); }
+  .releases-page .release { padding-block: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.releases-page) { scroll-behavior: auto; }
+}
+
+.release-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; margin-bottom: 24px; }
+.releases-page .release-heading h2 { margin: 0; }
+.release-latest { display: inline-block; padding: 4px 10px; border: 1px solid var(--red); border-radius: 4px; color: var(--red); font-size: 12px; font-weight: 500; line-height: 1.5; }
+.releases-page .release-history h2 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.2; }

@@ -8,9 +8,13 @@
   overflow: visible;
   vertical-align: -1px;
 }
+/* Keep SVG paths composited through the end of the transition. Chromium
+   otherwise changes edge rasterization at fractional display scaling. */
+.arrow-shaft, .arrow-head { will-change: transform; }
+/* Reveal from the moving tip so the shaft stays joined to the arrowhead. */
 .arrow-shaft {
-  transform-origin: 1px 6px;
-  transform: scaleX(0);
+  transform-origin: 13px 6px;
+  transform: translateX(-3px) scaleX(0);
   opacity: 0;
   transition: transform 160ms cubic-bezier(.2,.7,.3,1), opacity 100ms ease-out;
 }
@@ -18,7 +22,7 @@
   transform: translateX(0);
   transition: transform 160ms cubic-bezier(.2,.7,.3,1);
 }
-a:is(:hover, :focus-visible) .arrow-shaft { transform: scaleX(1); opacity: 1; }
+a:is(:hover, :focus-visible) .arrow-shaft { transform: translateX(0) scaleX(1); opacity: 1; }
 a:is(:hover, :focus-visible) .arrow-head { transform: translateX(3px); }
 
 .sticky-note.paper-ready {
@@ -126,6 +130,7 @@ a:is(:hover, :focus-visible) .arrow-head { transform: translateX(3px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .arrow-shaft, .arrow-head, .bin-lid { transition: none; }
+  .arrow-shaft, .arrow-head { will-change: auto; }
   .is-visible .bin-art, .game-bin.is-celebrating .bin-art { animation: none; }
 }
 /* The notes are charming at rest, but extra composited layers steal budget

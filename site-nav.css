@@ -1,0 +1,27 @@
+/* Shared navigation remains available on every reading surface and screen size. */
+.release-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0 .35em;
+  min-height: 28px;
+  padding: 4px 16px;
+  background: var(--red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+.release-banner a { color: inherit; font-weight: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.release-banner a:hover { color: inherit; text-decoration-thickness: 2px; }
+.release-banner a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+@media (max-width: 850px) {
+  .nav, .docs-nav { height: auto; min-height: 74px; flex-wrap: wrap; gap: 4px 24px; padding-block: 12px; }
+  .nav .nav-links, .docs-nav nav { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; }
+  .nav .nav-links a, .docs-nav nav a:nth-child(n), .api-page .docs-nav nav a:nth-child(n) { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* Keep the copyright on the right, including the narrow footer layout. */
+footer .footer-copyright:nth-child(n) { margin-inline-start: auto; width: auto; order: initial; text-align: right; }

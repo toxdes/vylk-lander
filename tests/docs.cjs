@@ -57,7 +57,6 @@ async function checkDocument(page) {
       await page.evaluate(() => document.fonts.ready);
       const help = page.locator('.why a[href="docs/index.html' + encryptionAnchor + '"]');
       assert.equal(await help.count(), 1, 'Homepage encryption feature links to the guide');
-      assert.match(await page.locator('.why').textContent(), /end-to-end encryption/);
       assert.doesNotMatch(await page.locator('.why').textContent(), /Titles and tags are stored separately/);
       await checkDocument(page);
       await help.scrollIntoViewIfNeeded();

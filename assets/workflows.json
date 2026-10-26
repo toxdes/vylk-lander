@@ -1,0 +1,135 @@
+{
+  "success": true,
+  "duration": 149.5006056380007,
+  "desktop_offset": 1.432184272001905,
+  "phone_offset": 0.5748699690011563,
+  "dual_start": 110.48901156099964,
+  "events": [
+    {
+      "name": "Plan with tags",
+      "time": 0.0
+    },
+    {
+      "name": "Drag a completed task",
+      "time": 12.087
+    },
+    {
+      "name": "Find a chapter",
+      "time": 52.088
+    },
+    {
+      "name": "Preview size picker",
+      "time": 66.737
+    },
+    {
+      "name": "Zen size picker",
+      "time": 75.742
+    },
+    {
+      "name": "Write in Zen",
+      "time": 87.55
+    },
+    {
+      "name": "Across devices",
+      "time": 110.489
+    },
+    {
+      "name": "Work offline",
+      "time": 133.331
+    },
+    {
+      "name": "Reload while offline",
+      "time": 143.265
+    },
+    {
+      "name": "Reconnect and sync",
+      "time": 146.811
+    },
+    {
+      "name": "End",
+      "time": 149.501
+    }
+  ],
+  "sample_data": true,
+  "single_instance": true,
+  "notes_use_em_dashes": false,
+  "visible_cursor": true,
+  "grab_cursor": true,
+  "real_offline_reload": true,
+  "capture_picker": "real HTML select/options rendered with appearance:base-select",
+  "desktop_size": [
+    1920,
+    1080
+  ],
+  "dual_desktop_crop": [
+    1440,
+    1000,
+    0,
+    0
+  ],
+  "phone_size": [
+    390,
+    844
+  ],
+  "version": "3.1.1",
+  "revision": "7e9706fde748df9e42d7da01a1fa820dc7df26eb",
+  "playback_speed": 1.5,
+  "recordings": [
+    {
+      "name": "walkthrough",
+      "file": "vylk-demo-walkthrough.mp4",
+      "width": 1920,
+      "height": 1080,
+      "duration": 99.666667,
+      "original_duration": 149.5006056380007,
+      "bytes": 2420312
+    }
+  ],
+  "framing": "macOS window and Dock, no menu bar; notchless phone with matched height during sync and offline use",
+  "chapters": [
+    {
+      "name": "Plan with tags",
+      "time": 0.0
+    },
+    {
+      "name": "Drag a completed task",
+      "time": 8.058
+    },
+    {
+      "name": "Find a chapter",
+      "time": 34.725
+    },
+    {
+      "name": "Preview size picker",
+      "time": 44.491
+    },
+    {
+      "name": "Zen size picker",
+      "time": 50.495
+    },
+    {
+      "name": "Write in Zen",
+      "time": 58.367
+    },
+    {
+      "name": "Across devices",
+      "time": 73.659
+    },
+    {
+      "name": "Work offline",
+      "time": 88.887
+    },
+    {
+      "name": "Reload while offline",
+      "time": 95.51
+    },
+    {
+      "name": "Reconnect and sync",
+      "time": 97.874
+    },
+    {
+      "name": "End",
+      "time": 99.667
+    }
+  ]
+}

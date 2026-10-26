@@ -21,11 +21,13 @@
   <link rel="stylesheet" href="interactions.css">
   <link rel="stylesheet" href="install.css">
   <link rel="stylesheet" href="mobile.css">
+  <link rel="stylesheet" href="site-nav.css">
 </head>
 <body>
+  <aside class="release-banner" aria-label="Latest release">vylk __VYLK_RELEASE_TAG__ is out! Check <a href="releases/#__VYLK_RELEASE_TAG__">what's new</a></aside>
   <header class="nav">
     <a class="brand" href="#top"><img src="assets/vylk-logo.webp" alt="" width="29" height="29"><span>VYLK</span></a>
-    <nav class="nav-links" aria-label="Main navigation"><a href="#install">Install</a><a href="docs/index.html">Docs</a><a href="https://github.com/toxdes/vylk">Source</a></nav>
+    <nav class="nav-links" aria-label="Main navigation"><a href="#install">Install</a><a href="docs/index.html">Docs</a><a href="releases/">Releases</a><a href="https://github.com/toxdes/vylk">Source</a></nav>
   </header>
 
   <main id="top">
@@ -37,11 +39,11 @@
         <div class="hero-actions"><a class="primary" data-demo-link href="https://demo.vylk.toxdes.com" target="_blank" rel="noopener noreferrer">Try Live Demo <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="secondary" href="#install">Get Vylk <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       </div>
       <div class="hero-notes" aria-label="VYLK features">
-        <article class="sticky-note note-pink"><b>Live preview</b><span>See your words take shape as you write.</span></article>
-        <article class="sticky-note note-yellow"><b>Offline first</b><span>Keep editing when the internet is away.</span></article>
-        <article class="sticky-note note-blue"><b>Auto-save</b><span>Keep your latest changes on the page.</span></article>
-        <article class="sticky-note note-green"><b>Focused writing</b><span>Stay in a distraction-free writing flow.</span></article>
-        <article class="sticky-note note-orange"><b>End-to-end encrypted</b><span>Optional encryption for your words, titles, and tags.</span></article>
+        <article class="sticky-note note-pink"><b>Live preview</b><span>See Markdown take shape, side by side.</span></article>
+        <article class="sticky-note note-yellow"><b>Offline first</b><span>Works offline. Syncs seamlessly when you’re back online.</span></article>
+        <article class="sticky-note note-blue"><b>Self-host</b><span>Run one binary. Host your own notes.</span></article>
+        <article class="sticky-note note-green"><b>Zen writing</b><span>Clear the distractions. Focus on your words.</span></article>
+        <article class="sticky-note note-orange"><b>End-to-end encrypted</b><span>Encrypt every note, on every device.</span></article>
         <article class="sticky-note note-lilac"><b>Install as an app</b><span>Add VYLK to your home screen and use it like an app.</span></article>
       </div>
     </section>
@@ -54,23 +56,23 @@
           <figure class="stage-preview is-active" id="screen-dashboard" role="group" aria-roledescription="slide" aria-label="Dashboard screen"><figcaption class="visually-hidden">Dashboard screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-dashboard-mobile.webp"><img src="assets/vylk-dashboard-desktop.webp" alt="VYLK dashboard showing a small collection of notes" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
           <figure class="stage-preview stage-preview-editor" id="screen-editor" role="group" aria-roledescription="slide" aria-label="Editor screen" aria-hidden="true"><figcaption class="visually-hidden">Editor screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-editor-mobile.webp"><img src="assets/vylk-editor-desktop.webp" alt="VYLK editor showing a document and rendered preview" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
           <figure class="stage-preview" id="screen-preferences" role="group" aria-roledescription="slide" aria-label="Preferences screen" aria-hidden="true"><figcaption class="visually-hidden">Preferences screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-preferences-mobile.webp"><img src="assets/vylk-preferences-desktop.webp" alt="VYLK editor preferences showing font and saving options" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
-          <figure class="stage-preview" id="screen-focus" role="group" aria-roledescription="slide" aria-label="Distraction-free editor screen" aria-hidden="true"><figcaption class="visually-hidden">Distraction-free editor screen</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-focus-mobile.webp"><img src="assets/vylk-focus-desktop.webp" alt="VYLK distraction-free editor with the header hidden" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
+          <figure class="stage-preview" id="screen-focus" role="group" aria-roledescription="slide" aria-label="Zen writing screen" aria-hidden="true"><figcaption class="visually-hidden">Zen writing with inline formatting and a selection toolbar</figcaption><picture><source media="(max-width: 560px)" srcset="assets/vylk-focus-mobile.webp"><img src="assets/vylk-focus-desktop.webp" alt="VYLK Zen editor with rendered bold text, a link, and the compact selection toolbar" width="1440" height="900" loading="eager" decoding="async"></picture></figure>
           <button type="button" class="carousel-arrow carousel-arrow-prev" data-screen-prev aria-label="Show previous app screen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m10 3-5 5 5 5"/></svg></button>
           <button type="button" class="carousel-arrow carousel-arrow-next" data-screen-next aria-label="Show next app screen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
         </div>
       </div>
-      <div class="stage-bottom"><span>Lightweight enough to run anywhere.</span><span>Designed for everyday notes.</span></div>
+      <details class="screen-recording" data-walkthrough="walkthrough">
+        <summary>Watch Vylk in use</summary>
+        <video controls playsinline preload="none" src="assets/vylk-demo-walkthrough.mp4" poster="assets/vylk-demo-walkthrough.webp" aria-label="Vylk product walkthrough"></video>
+      </details>
     </section>
 
-    <section class="why" id="why">
-      <div class="why-heading"><h2>Nothing extra to manage.</h2><p>Just the pieces that help you write, find, and return to your notes.</p></div>
+    <section class="why" id="why" aria-labelledby="why-title">
+      <div class="why-heading"><h2 id="why-title">For lists, plans, and first drafts.</h2></div>
       <div class="why-lines">
-        <div><span>write</span><h3>See the note as you write it</h3><p>Write beside a live preview, check tasks, and rearrange blocks. Switch to Zen mode for a quiet page that follows your writing.</p></div>
-        <div><span>offline</span><h3>Keep working without internet</h3><p>The installed PWA caches its shell and notes, saves edits in IndexedDB, and syncs when your connection returns.</p></div>
-        <div><span>shape</span><h3>Make the workspace yours</h3><p>Choose your colors and fonts. Show the tools you use, hide the ones you don't, and give your words more room.</p></div>
-        <div><span>protect</span><h3>Encrypt before your notes leave</h3><p>Optional end-to-end encryption protects note bodies, titles, tags, and offline edits on your device. Keep a 24-word recovery key. <a href="docs/index.html#end-to-end-encryption">Read the setup and safety guide</a>.</p></div>
-        <div><span>devices</span><h3>Use the devices you already have</h3><p>Write in your desktop or mobile browser, or install the PWA. Encrypted vaults remember your browser across tabs and refreshes; manage signed-in devices in Preferences.</p></div>
-        <div><span>save</span><h3>Save as you go</h3><p>Your changes save as you pause. Prefer to save them yourself? That's always an option too.</p></div>
+        <div><h3>Write without the fuss.</h3><p>See your page take shape as you type. Hide the tools to focus, or change the fonts and colors to suit you.</p></div>
+        <div><h3>Pick up where you left off.</h3><p>Start a note at your desk. Add to it on your phone. Once you’ve signed in online, you can keep writing without internet. Your edits catch up when you reconnect.</p></div>
+        <div><h3>Save your work. Keep it private.</h3><p>Your changes save as you pause. Turn on encryption to lock your notes before they leave your device. <a href="docs/index.html#end-to-end-encryption">How to keep your notes private</a>.</p></div>
       </div>
     </section>
 
@@ -140,7 +142,7 @@
       </div>
     </section>
 
-    <section class="statement"><p>VYLK is free and open source.</p><h2>Your writing does not need a subscription.</h2><a href="https://github.com/toxdes/vylk">View on GitHub<svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></section>
+    <section class="statement"><p>VYLK is free and open source.</p><h2>Your writing does not need a subscription.</h2><div class="hero-actions"><a class="primary" href="https://github.com/toxdes/vylk">View on GitHub <svg class="cta-arrow" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false"><path class="arrow-shaft" d="M1 6H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt"/><path class="arrow-head" d="m6 2 4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div></section>
   </main>
 
   <div class="demo-dialog" id="demo-dialog" role="dialog" aria-modal="true" aria-labelledby="demo-dialog-title" aria-describedby="demo-dialog-description" hidden>
@@ -148,7 +150,8 @@
       <button class="demo-dialog-close" type="button" data-demo-close aria-label="Close demo notice">&times;</button>
       <h2 id="demo-dialog-title">You are about to leave VYLK</h2>
       <div class="demo-dialog-copy" id="demo-dialog-description">
-        <p>This is a shared demo, not private storage. Notes are cleared every 10 minutes and encryption changes are disabled. Don't enter personal information.</p>
+        <p>This is a shared demo, not private storage. Notes are cleared every 3 hours and encryption changes are disabled. Don't enter personal information.</p>
+        <p>For now, due to budget concerns, the demo runs on <a href="https://tierhive.com/" target="_blank" rel="noopener noreferrer">TierHive</a>’s cheapest 128 MB RAM instance. The first load may be slow.</p>
         <p class="demo-dialog-password"><strong>Password:</strong> <code>1234</code></p>
       </div>
       <div class="demo-dialog-actions">
@@ -158,7 +161,7 @@
     </div>
   </div>
 
-  <footer><span>VYLK</span><span>&copy; 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span><a href="https://github.com/toxdes/vylk">GitHub</a></footer>
+  <footer><span>VYLK</span><span class="footer-copyright">&copy; 2026 <a href="https://toxdes.com" target="_blank" rel="noopener noreferrer">toxdes.com</a></span></footer>
   <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"SoftwareApplication","name":"VYLK","applicationCategory":"ProductivityApplication","operatingSystem":"Linux, Windows, macOS, Docker","description":"A lightweight, self-hosted Markdown editor for notes you control.","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"codeRepository":"https://github.com/toxdes/vylk"}
   </script>

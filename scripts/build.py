@@ -14,6 +14,7 @@ from urllib.request import Request, urlopen
 
 sys.dont_write_bytecode = True
 
+from announcements import releases_for_version, render_announcements
 from api_reference import render_guide, render_reference, validate_specification
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,6 +84,15 @@ def documentation(version):
     return spec, guide, bool(local)
 
 
+def release_descriptions():
+    if local := os.environ.get("VYLK_API_SOURCE"):
+        return (Path(local).expanduser().resolve() / "releases.md").read_text()
+    # The curated history lives on main so existing release tags can be
+    # announced retroactively. The renderer excludes versions newer than the
+    # selected stable release; API documentation remains pinned to its tag.
+    return download(f"{SOURCE_URL}/main/releases.md?build={time.time_ns()}")
+
+
 def build():
     version = release_version()
     spec, guide, preview = documentation(version)
@@ -90,6 +100,10 @@ def build():
     if destination.is_symlink():
         raise ValueError("Refusing to replace a symlinked dist directory")
     template = (ROOT / "scripts/api-template.html").read_text()
+    announcements_template = (ROOT / "scripts/announcements-template.html").read_text()
+    history = release_descriptions()
+    announcements_html = render_announcements(history, version, announcements_template)
+    latest_tag = releases_for_version(history, version)[0].tag
     # Acquire and validate everything before replacing the last successful build.
     with tempfile.TemporaryDirectory(prefix=".build-", dir=ROOT) as directory:
         output = Path(directory) / "dist"
@@ -97,8 +111,16 @@ def build():
         for pattern in ("index.html", "*.css", "*.js"):
             for file in ROOT.glob(pattern):
                 shutil.copy2(file, output / file.name)
-        for name in ("assets", "docs"):
-            shutil.copytree(ROOT / name, output / name)
+        # Capture provenance is used by source tooling/tests, not by visitors.
+        shutil.copytree(
+            ROOT / "assets",
+            output / "assets",
+            ignore=shutil.ignore_patterns("capture.json", "workflows.json"),
+        )
+        shutil.copytree(ROOT / "docs", output / "docs")
+        announcements = output / "releases"
+        announcements.mkdir()
+        (announcements / "index.html").write_text(announcements_html)
         api = output / "docs/api"
         api.mkdir(exist_ok=True)
         (api / "openapi.json").write_text(json.dumps(spec, indent=2) + "\n")
@@ -110,7 +132,11 @@ def build():
         (output / "version.js").write_text(f'window.VYLK_VERSION = "{version}";\n')
         for file in output.rglob("*"):
             if file.is_file() and file.suffix in (".html", ".js"):
-                file.write_text(file.read_text().replace("__VYLK_VERSION__", version))
+                file.write_text(
+                    file.read_text()
+                    .replace("__VYLK_VERSION__", version)
+                    .replace("__VYLK_RELEASE_TAG__", latest_tag)
+                )
         if destination.exists():
             shutil.rmtree(destination)
         output.rename(destination)

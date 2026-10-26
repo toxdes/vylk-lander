@@ -1,0 +1,13 @@
+{
+  "version": "3.1.1",
+  "revision": "7e9706fde748df9e42d7da01a1fa820dc7df26eb",
+  "sample_data": true,
+  "desktop": [
+    1440,
+    900
+  ],
+  "mobile": [
+    390,
+    844
+  ]
+}
