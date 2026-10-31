@@ -16,6 +16,8 @@ From the lander repository root:
 bun test tests/physics.test.cjs
 bun tests/browser.cjs
 bun tests/arrows.cjs
+VYLK_BROWSER=firefox bun tests/arrows.cjs
+bun tests/firefox-arrows.cjs
 bun tests/round.cjs
 bun tests/rebounds.cjs
 bun tests/install.cjs
@@ -80,3 +82,15 @@ The homepage banner links to the newest included version, marked Latest.
 at desktop/mobile sizes and 100%, 125%, and 200% display scaling. It also checks
 reduced motion. The shaft must stay joined to the arrowhead without an endpoint
 rendering snap.
+
+`VYLK_URL=http://localhost:3002` runs arrow checks against the served build.
+Rebuild `dist` first when that server serves generated output. The Firefox
+settling check requires Playwright Firefox and FFmpeg; it records the unpaused
+transition through its natural end and rejects vertical movement of either the
+chevron or shaft, including changes to their relative alignment.
+Chromium also records real endpoint frames through delayed layer release.
+These checks preserve the button’s actual position and colors.
+
+The chevron is a static inline SVG mask in `interactions.css`. HTML layers own
+translation and shaft opacity; avoid transforming SVG groups, which changes
+Gecko rasterization. The inline mask also supports direct `file://` previews.

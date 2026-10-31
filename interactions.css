@@ -1,29 +1,58 @@
-/* One definition per state. SVG strokes keep the head and shaft the same weight. */
-.cta-arrow {
+/* Fixed clip and HTML motion keep Zen from rerasterizing an animated SVG group.
+   The chevron is an immutable SVG mask; only its containing layer moves. */
+.hero-actions .cta-arrow {
+  position: relative;
   display: inline-block;
   width: 16px;
-  height: 12px;
+  height: 8px;
   flex: 0 0 16px;
-  margin-left: 8px;
-  overflow: visible;
+  margin: 0 0 0 8px;
   vertical-align: -1px;
 }
-/* Keep SVG paths composited through the end of the transition. Chromium
-   otherwise changes edge rasterization at fractional display scaling. */
-.arrow-shaft, .arrow-head { will-change: transform; }
-/* Reveal from the moving tip so the shaft stays joined to the arrowhead. */
-.arrow-shaft {
-  transform-origin: 13px 6px;
-  transform: translateX(-3px) scaleX(0);
+.cta-arrow .arrow-clip {
+  position: absolute;
+  top: -0.5px;
+  left: 0;
+  width: 12px;
+  height: 9px;
+  margin: 0;
+  overflow: hidden;
+}
+.cta-arrow .arrow-group {
+  position: absolute;
+  inset: 0;
+  width: 12px;
+  height: 9px;
+  margin: 0;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  transition: transform 300ms cubic-bezier(.25,1,.5,1);
+}
+.cta-arrow .arrow-shaft {
+  position: absolute;
+  top: 3.375px;
+  left: -10px;
+  width: 13px;
+  height: 1.75px;
+  margin: 0;
+  background: currentColor;
   opacity: 0;
-  transition: transform 160ms cubic-bezier(.2,.7,.3,1), opacity 100ms ease-out;
+  will-change: opacity;
+  transition: opacity 300ms cubic-bezier(.25,1,.5,1);
 }
-.arrow-head {
-  transform: translateX(0);
-  transition: transform 160ms cubic-bezier(.2,.7,.3,1);
+.cta-arrow .arrow-head {
+  position: absolute;
+  inset: 0;
+  width: 12px;
+  height: 9px;
+  margin: 0;
+  background: currentColor;
+  /* Inline SVG keeps the standalone file:// preview usable too. */
+  mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%229%22%20viewBox%3D%220%200%2012%209%22%3E%0A%20%20%3Cpath%20d%3D%22M4.84766%203.63379L5.45898%204.25L4.84766%204.86621L1.24219%208.49902L0%207.2666L2.99316%204.24902L0%201.23242L1.24219%200L4.84766%203.63379Z%22%2F%3E%0A%3C%2Fsvg%3E') 0 0 / 12px 9px no-repeat;
+  mask-mode: alpha;
 }
-a:is(:hover, :focus-visible) .arrow-shaft { transform: translateX(0) scaleX(1); opacity: 1; }
-a:is(:hover, :focus-visible) .arrow-head { transform: translateX(3px); }
+a:is(:hover, :focus-visible) .arrow-group { transform: translate3d(6px, 0, 0); }
+a:is(:hover, :focus-visible) .arrow-shaft { opacity: 1; }
 
 .sticky-note.paper-ready {
   width: 56px;
@@ -129,8 +158,8 @@ a:is(:hover, :focus-visible) .arrow-head { transform: translateX(3px); }
   .hero-notes { width: calc(100% - 32px); justify-self: center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .arrow-shaft, .arrow-head, .bin-lid { transition: none; }
-  .arrow-shaft, .arrow-head { will-change: auto; }
+  .arrow-group, .arrow-shaft, .bin-lid { transition: none; }
+  .arrow-group, .arrow-shaft { will-change: auto; }
   .is-visible .bin-art, .game-bin.is-celebrating .bin-art { animation: none; }
 }
 /* The notes are charming at rest, but extra composited layers steal budget

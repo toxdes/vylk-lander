@@ -4,7 +4,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 (async () => {
-  const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
   try {
     for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
       const page = await browser.newPage({ viewport, hasTouch: viewport.width < 600 });
@@ -42,8 +42,8 @@ const { pathToFileURL } = require('node:url');
       assert.equal(await github.evaluate(e => getComputedStyle(e).borderBottomWidth), await page.locator('.hero .primary').evaluate(e => getComputedStyle(e).borderBottomWidth), 'GitHub uses the shared button border');
       await github.hover();
       assert.equal(await github.evaluate(e => getComputedStyle(e).textDecorationLine), 'none');
-      await page.waitForTimeout(220);
-      assert.equal(await github.locator('.arrow-head').evaluate(e => getComputedStyle(e).stroke), await github.evaluate(e => getComputedStyle(e).color), 'The shared button arrow follows its text color');
+      await page.waitForTimeout(350);
+      assert.equal(await github.locator('.arrow-head').evaluate(e => getComputedStyle(e).backgroundColor), await github.evaluate(e => getComputedStyle(e).color), 'The shared button arrow follows its text color');
       await page.mouse.move(0, 0);
       await github.focus();
       assert.equal(await github.evaluate(e => getComputedStyle(e).textDecorationLine), 'none');
@@ -52,15 +52,15 @@ const { pathToFileURL } = require('node:url');
       const primary = page.locator('.primary').first();
       await page.evaluate(() => document.activeElement && document.activeElement.blur());
       await page.mouse.move(viewport.width - 1, viewport.height - 1);
-      await page.waitForTimeout(150);
+      await page.waitForTimeout(350);
       assert.equal(await primary.locator('.arrow-shaft').evaluate(e => getComputedStyle(e).opacity), '0');
       await primary.hover();
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(350);
       assert.equal(await primary.locator('.arrow-shaft').evaluate(e => getComputedStyle(e).opacity), '1');
-      assert.equal(await primary.locator('.arrow-head').evaluate(e => getComputedStyle(e).transform), 'matrix(1, 0, 0, 1, 3, 0)');
+      assert.equal(await primary.locator('.arrow-group').evaluate(e => new DOMMatrixReadOnly(getComputedStyle(e).transform).m41), 6);
       await primary.screenshot({ path: '/tmp/vylk-arrow-hover-' + viewport.width + '.png' });
       await page.mouse.move(0, 0);
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(350);
       await primary.screenshot({ path: '/tmp/vylk-arrow-rest-' + viewport.width + '.png' });
       const note = page.locator('.note-pink');
       await note.evaluate(n => n.click());
