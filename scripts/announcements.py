@@ -106,7 +106,7 @@ def render_description(markdown):
         if (
             re.fullmatch(r"#{1,4} (?:Changes|What['’]s Changed)", line, re.IGNORECASE)
             or re.fullmatch(
-                r"Changes since \[previous release\]\([^)]+\):", line, re.IGNORECASE
+                r"Changes since \[[^\]]+\]\([^)]+\)\s*[:\-]?", line, re.IGNORECASE
             )
             or not line
         ):

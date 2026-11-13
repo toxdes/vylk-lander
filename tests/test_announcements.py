@@ -68,6 +68,20 @@ class AnnouncementTests(unittest.TestCase):
         self.assertIn("Original change.", html)
         self.assertEqual(announcements.parse_releases(source)[0].description, body)
 
+    def test_site_omits_changes_since_line_variants(self):
+        for line in (
+            "Changes since [previous release](https://github.com/toxdes/vylk/releases/tag/v3.1.0):",
+            "Changes since [last release](https://github.com/toxdes/vylk/releases/tag/v3.1.1) -",
+        ):
+            with self.subTest(line=line):
+                html = announcements.render_announcements(
+                    entry(body=f"## Changes\n{line}\n\n1. Original change."),
+                    "3.1.1",
+                    TEMPLATE,
+                )
+                self.assertNotIn("Changes since", html)
+                self.assertIn("Original change.", html)
+
     def test_latest_badge_and_older_history(self):
         source = entry("v3.1.0") + entry("v3.1.1") + entry("v3.0.4")
         html = announcements.render_announcements(source, "3.1.0", TEMPLATE)
