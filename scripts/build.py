@@ -108,7 +108,7 @@ def build():
     with tempfile.TemporaryDirectory(prefix=".build-", dir=ROOT) as directory:
         output = Path(directory) / "dist"
         output.mkdir()
-        for pattern in ("index.html", "*.css", "*.js"):
+        for pattern in ("index.html", "_headers", "*.css", "*.js"):
             for file in ROOT.glob(pattern):
                 shutil.copy2(file, output / file.name)
         # Capture provenance is used by source tooling/tests, not by visitors.
