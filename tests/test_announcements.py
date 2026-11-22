@@ -150,7 +150,7 @@ class AnnouncementTests(unittest.TestCase):
                 with (
                     patch.object(build, "ROOT", root),
                     patch.object(build, "release_version", return_value="3.1.1"),
-                    patch.object(build, "documentation", return_value=({}, "", False)),
+                    patch.object(build, "documentation", return_value=({}, "", {name: "# Page\n" for name, _, _ in build.PAGES}, False)),
                     patch.object(build.Path, "read_text", return_value="template"),
                     patch.object(build, "release_descriptions", side_effect=error),
                     self.assertRaises(type(error)),

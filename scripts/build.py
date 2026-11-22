@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the static lander and release-matched API reference without a runtime service."""
+"""Build the static lander and release-matched documentation without a runtime service."""
 
 import json
 import os
@@ -16,6 +16,7 @@ sys.dont_write_bytecode = True
 
 from announcements import releases_for_version, render_announcements
 from api_reference import render_guide, render_reference, validate_specification
+from docs_pages import PAGES, render_pages
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION_PATTERN = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
@@ -38,7 +39,7 @@ def download(url):
             if error.code == 404:
                 raise ValueError(
                     f"Release source is missing: {url}. Publish a release containing "
-                    "docs/api before deploying, or use VYLK_API_SOURCE for a local preview."
+                    "docs/ before deploying, or use VYLK_API_SOURCE for a local preview."
                 ) from error
             if attempt == 2:
                 raise
@@ -71,17 +72,19 @@ def documentation(version):
         version_text = (source / "VERSION").read_text().strip()
         spec_text = (source / "docs/api/openapi.json").read_text()
         guide = (source / "docs/api/client-protocol.md").read_text()
+        pages = {name: (source / "docs" / name).read_text() for name, _, _ in PAGES}
     else:
         base = f"{SOURCE_URL}/v{version}"
         version_text = download(f"{base}/VERSION").strip()
         spec_text = download(f"{base}/docs/api/openapi.json")
         guide = download(f"{base}/docs/api/client-protocol.md")
+        pages = {name: download(f"{base}/docs/{name}") for name, _, _ in PAGES}
     if version_text != version:
         raise ValueError("Selected source VERSION does not match the lander version")
     spec = json.loads(spec_text)
     validate_specification(spec)
     spec["info"]["version"] = version
-    return spec, guide, bool(local)
+    return spec, guide, pages, bool(local)
 
 
 def release_descriptions():
@@ -95,7 +98,7 @@ def release_descriptions():
 
 def build():
     version = release_version()
-    spec, guide, preview = documentation(version)
+    spec, guide, sources, preview = documentation(version)
     destination = ROOT / "dist"
     if destination.is_symlink():
         raise ValueError("Refusing to replace a symlinked dist directory")
@@ -104,6 +107,13 @@ def build():
     history = release_descriptions()
     announcements_html = render_announcements(history, version, announcements_template)
     latest_tag = releases_for_version(history, version)[0].tag
+    docs_html = render_pages(
+        sources,
+        (ROOT / "scripts/docs-template.html").read_text(),
+        version,
+        "main" if preview else f"v{version}",
+        preview,
+    )
     # Acquire and validate everything before replacing the last successful build.
     with tempfile.TemporaryDirectory(prefix=".build-", dir=ROOT) as directory:
         output = Path(directory) / "dist"
@@ -118,6 +128,8 @@ def build():
             ignore=shutil.ignore_patterns("capture.json", "workflows.json"),
         )
         shutil.copytree(ROOT / "docs", output / "docs")
+        for name, html in docs_html.items():
+            (output / "docs" / name).write_text(html)
         announcements = output / "releases"
         announcements.mkdir()
         (announcements / "index.html").write_text(announcements_html)
@@ -141,7 +153,7 @@ def build():
             shutil.rmtree(destination)
         output.rename(destination)
     print(
-        f"Prepared VYLK lander and API reference for v{version}"
+        f"Prepared VYLK lander and documentation for v{version}"
         + (" (local preview)" if preview else "")
     )
 

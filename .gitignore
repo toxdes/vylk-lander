@@ -16,3 +16,6 @@ coverage/
 assets/*.png
 !assets/favicon.png
 logo.png
+
+# Git worktrees
+.worktrees/
