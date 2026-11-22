@@ -56,6 +56,7 @@ def render(text, link=lambda url: url):
     section_open = False
     code_lines = None
     list_kind = None
+    list_item = ""
     ids = set()
 
     def flush_paragraph():
@@ -141,7 +142,12 @@ def render(text, link=lambda url: url):
                 start = int(match[2]) if match[2] else 1
                 content.append(f'<ol start="{start}">' if kind == "ol" and start != 1 else f"<{kind}>")
                 list_kind = kind
-            content.append("<li>" + inline(match[3], link) + "</li>")
+            list_item = match[3]
+            content.append("<li>" + inline(list_item, link) + "</li>")
+        elif list_kind and re.match(r"^\s+(?!([-*]|[0-9]+\.) )\S", line):
+            # An indented line continues the previous list item.
+            list_item += " " + line.strip()
+            content[-1] = "<li>" + inline(list_item, link) + "</li>"
         elif re.match(r"^(\s+\S|>)", line):
             raise ValueError(
                 "Markdown uses an unsupported block; extend and test the renderer before publishing"

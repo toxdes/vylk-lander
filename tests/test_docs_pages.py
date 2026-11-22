@@ -38,6 +38,10 @@ class MarkdownTests(unittest.TestCase):
         self.assertIn('<ol start="2"><li>Second</li></ol>', document.content)
         self.assertEqual(document.title, "Page")
 
+    def test_indented_lines_continue_a_list_item(self):
+        document = docs_markdown.render("# Page\n\n- First line\n  continues `here`.\n- Second\n")
+        self.assertIn("<ul><li>First line continues <code>here</code>.</li><li>Second</li></ul>", document.content)
+
     def test_subheadings_get_anchors_and_duplicates_fail(self):
         document = docs_markdown.render('# Page\n\n## Group\n\n### Respond to "Notes database changed"\n')
         self.assertIn('<h3 id="respond-to-notes-database-changed">', document.content)
@@ -46,7 +50,7 @@ class MarkdownTests(unittest.TestCase):
             docs_markdown.render("# Page\n\n## Same\n\n### Same\n")
 
     def test_unsupported_and_malformed_blocks_fail(self):
-        for text in ("# Page\n\n> quote\n", "# Page\n\n  - nested\n", "# Page\n\n| a |\n| b |\n", "## No title\n"):
+        for text in ("# Page\n\n> quote\n", "# Page\n\n  - nested\n", "# Page\n\n- item\n  - nested\n", "# Page\n\n| a |\n| b |\n", "## No title\n"):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 docs_markdown.render(text)
 
