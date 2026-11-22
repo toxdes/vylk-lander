@@ -1,14 +1,16 @@
-"""Render our OpenAPI contract into the lander's existing static reading layout.
+"""Render VYLK's OpenAPI specification as a static HTTP API reference.
 
-This intentionally renders documentation, not a live API console. The OpenAPI
-download remains available for SDK generation and other reference viewers.
-The guide uses paragraphs, headings, flat lists, fenced code, links and inline code;
-unsupported Markdown blocks fail the build instead of silently losing content.
+Each operation gets request header, parameter, and body tables, a response
+table with one row per error code, response header and body tables, and an
+example request and response taken from the specification. The client protocol
+guide is rendered by the shared Markdown renderer in docs_markdown.py.
 """
 
 import json
 import re
 from html import escape
+
+import docs_markdown
 
 METHODS = {"get", "post", "patch", "delete", "put", "head", "options"}
 
@@ -60,205 +62,338 @@ def validate_specification(spec):
     visit(spec)
 
 
-def paragraph(text):
-    return f"<p>{escape(text)}</p>" if text else ""
+BASE_URL = "http://localhost:8080"
+STATUS_TEXT = {
+    200: "OK", 204: "No Content", 400: "Bad Request", 401: "Unauthorized", 403: "Forbidden",
+    404: "Not Found", 409: "Conflict", 423: "Locked", 426: "Upgrade Required", 429: "Too Many Requests",
+    500: "Internal Server Error", 503: "Service Unavailable", 507: "Insufficient Storage",
+}
+
+
+def link(url):
+    """Map links in spec descriptions to the published reference pages."""
+    path, _, fragment = url.partition("#")
+    if path == "client-protocol.md":
+        return "client-protocol.html" + (f"#{fragment}" if fragment else "")
+    return url
+
+
+def text(value):
+    return docs_markdown.inline(value, link) if value else ""
+
+
+def paragraph(value):
+    return f"<p>{text(value)}</p>" if value else ""
 
 
 def table(headers, rows):
-    if not rows:
-        return paragraph("None.")
     head = "".join(f'<th scope="col">{escape(label)}</th>' for label in headers)
-    body = "".join(
-        "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows
-    )
+    body = "".join("<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows)
     return f'<div class="table-wrap"><table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
 
 
-def schema_label(schema):
-    if "$ref" in schema:
-        name = schema["$ref"].rsplit("/", 1)[1]
-        return f'<a href="index.html#schema-{escape(name)}">{escape(name)}</a>'
-    variants = schema.get("oneOf", schema.get("anyOf", schema.get("allOf")))
-    if variants:
-        joiner = " + " if "allOf" in schema else " or "
-        return joiner.join(schema_label(item) for item in variants)
-    kind = schema.get("type", "any")
-    if kind == "array":
-        return "array of " + schema_label(schema["items"])
-    return escape(" / ".join(kind) if isinstance(kind, list) else kind)
+def component(schema):
+    ref = schema.get("$ref", "")
+    return ref.rsplit("/", 1)[1] if ref.startswith("#/components/schemas/") else None
 
 
-def constraints(schema):
-    values = [schema.get("description", "")]
-    for field in (
-        "enum",
-        "const",
-        "default",
-        "format",
-        "pattern",
-        "minimum",
-        "maximum",
-        "minLength",
-        "maxLength",
-        "minItems",
-        "maxItems",
-        "maxProperties",
-    ):
-        if field in schema:
-            values.append(f"{field}: {json.dumps(schema[field], ensure_ascii=False)}")
-    return " ".join(filter(None, values))
-
-
-def schema_fields(spec, schema):
+def is_object(spec, schema):
     value = resolve(spec, schema)
-    properties = dict(value.get("properties", {}))
-    required = set(value.get("required", []))
+    return value.get("type") == "object" or any(key in value for key in ("oneOf", "anyOf", "allOf"))
+
+
+def object_link(spec, name, objects):
+    objects.add(name)
+    title = spec["components"]["schemas"][name].get("title", name)
+    return f'<a href="#object-{escape(name.lower())}">{escape(title)}</a>'
+
+
+def literal(value):
+    """A JSON value as a reader types it. Only the empty string keeps its quotes."""
+    return value if isinstance(value, str) and value else json.dumps(value)
+
+
+def type_label(spec, schema, objects):
+    """Describe a field's type, linking named objects to the Objects section."""
+    name = component(schema)
+    if name and is_object(spec, schema):
+        return object_link(spec, name, objects)
+    value = resolve(spec, schema)
+    if "const" in value:
+        return f"<code>{escape(literal(value['const']))}</code>"
+    variants = value.get("oneOf", value.get("anyOf"))
+    if variants:
+        return " or ".join(type_label(spec, item, objects) for item in variants)
+    kind = value.get("type", "any")
+    if kind == "array":
+        items = value["items"]
+        if not component(items) and resolve(spec, items).get("type") == "object":
+            return "array of objects"
+        return "array of " + type_label(spec, items, objects)
+    if isinstance(kind, list):
+        return " or ".join(escape(item) for item in kind)
+    if value.get("format") == "date-time":
+        return "string (date-time)"
+    return escape(kind)
+
+
+def details(spec, schema, objects):
+    """Description followed by the constraints a client must respect."""
+    value = resolve(spec, schema)
+    parts = [text(schema.get("description") or value.get("description", ""))]
+    if "enum" in value:
+        parts.append("One of " + ", ".join(f"<code>{escape(literal(item))}</code>" for item in value["enum"]) + ".")
+    if "default" in schema or "default" in value:
+        parts.append(f"Default: <code>{escape(literal(schema.get('default', value.get('default'))))}</code>.")
+    if "minimum" in value and "maximum" in value:
+        parts.append(f"From {value['minimum']} to {value['maximum']}.")
+    elif "minimum" in value:
+        parts.append(f"At least {value['minimum']}.")
+    # A component that describes its own format needs no pattern. A field that overrides the description does.
+    if "pattern" in value and (not component(schema) or "description" in schema):
+        parts.append(f"Pattern: <code>{escape(value['pattern'])}</code>.")
+    additional = value.get("additionalProperties")
+    if isinstance(additional, dict) and additional:
+        parts.append("Each value is " + type_label(spec, additional, objects) + ".")
+    return " ".join(part for part in parts if part)
+
+
+def merged(spec, schema):
+    value = resolve(spec, schema)
+    properties, required = dict(value.get("properties", {})), set(value.get("required", []))
     for part in value.get("allOf", []):
-        nested, names = schema_fields(spec, part)
+        nested, names = merged(spec, part)
         properties.update(nested)
         required.update(names)
     return properties, required
 
 
-def schema_content(spec, schema):
-    value = resolve(spec, schema)
-    content = paragraph(value.get("description", ""))
-    properties, required = schema_fields(spec, value)
-    if properties:
-        rows = []
-        for name, field in properties.items():
-            resolved = resolve(spec, field)
-            rows.append(
-                [
-                    f"<code>{escape(name)}</code>",
-                    schema_label(field),
-                    "Yes" if name in required else "No",
-                    escape(constraints(resolved)),
-                ]
-            )
-        content += table(["Field", "Type", "Required", "Details"], rows)
-    elif any(key in value for key in ("oneOf", "anyOf", "allOf")):
-        content += (
-            paragraph("Variants:")
-            + "<ul>"
-            + "".join(
-                f"<li>{schema_label(item)}</li>"
-                for item in value.get(
-                    "oneOf", value.get("anyOf", value.get("allOf", []))
-                )
-            )
-            + "</ul>"
-        )
-    else:
-        content += paragraph(constraints(value)) + f"<p>Type: {schema_label(value)}</p>"
-    if (
-        value.get("additionalProperties") is False
-        or value.get("unevaluatedProperties") is False
-    ):
-        content += paragraph("Unknown fields are rejected.")
-    elif isinstance(value.get("additionalProperties"), dict):
-        content += (
-            f"<p>Additional values: {schema_label(value['additionalProperties'])}</p>"
-        )
-    return content
-
-
-def parameter_rows(spec, parameters, location):
+def field_rows(spec, schema, objects, request, prefix=""):
+    """Rows of Key, Value, Description. Inline objects are flattened with dotted keys."""
+    properties, required = merged(spec, schema)
     rows = []
-    for parameter in parameters:
-        value = resolve(spec, parameter)
-        if value["in"] == location:
-            schema = resolve(spec, value["schema"])
-            rows.append(
-                [
-                    f"<code>{escape(value['name'])}</code>",
-                    schema_label(value["schema"]),
-                    "Yes" if value.get("required") else "No",
-                    escape(value.get("description", "") + " " + constraints(schema)),
-                ]
-            )
+    for name, field in properties.items():
+        key = prefix + name
+        label = type_label(spec, field, objects)
+        if request and name in required:
+            label += ", required"
+        rows.append([f"<code>{escape(key)}</code>", label, details(spec, field, objects)])
+        value = resolve(spec, field) if not component(field) else {}
+        if value.get("type") == "object" and value.get("properties"):
+            rows += field_rows(spec, value, objects, request, key + ".")
+        elif value.get("type") == "array" and not component(value["items"]) and resolve(spec, value["items"]).get("properties"):
+            rows += field_rows(spec, value["items"], objects, request, key + "[].")
     return rows
 
 
-def media_content(spec, content, expand_references=True):
-    result = ""
-    for media, value in content.items():
-        result += f"<p>Content-Type: <code>{escape(media)}</code></p>"
-        if "schema" in value:
-            result += f"<p>Schema: {schema_label(value['schema'])}</p>"
-            if expand_references or "$ref" not in value["schema"]:
-                result += schema_content(spec, value["schema"])
-        if "example" in value:
-            example = value["example"]
-            text = (
-                example if isinstance(example, str) else json.dumps(example, indent=2)
-            )
-            result += f"<pre><code>{escape(text)}</code></pre>"
+def variants(spec, schema):
+    value = resolve(spec, schema)
+    return value.get("oneOf", value.get("anyOf", []))
+
+
+def schema_content(spec, schema, objects, request):
+    """Tables for a body schema. Variants get one labeled table each."""
+    options = variants(spec, schema) if "allOf" not in resolve(spec, schema) else []
+    if options:
+        result = ""
+        for option in options:
+            value = resolve(spec, option)
+            title = value.get("title", component(option) or "Variant")
+            result += f'<p class="api-variant"><strong>{escape(title)}.</strong> {text(value.get("description", ""))}</p>'
+            result += schema_content(spec, option, objects, request)
+        return result
+    value = resolve(spec, schema)
+    if value.get("type") == "array":
+        items = value["items"]
+        if component(items) or not resolve(spec, items).get("properties"):
+            return f"<p>An array of {type_label(spec, items, objects)}.</p>"
+        return "<p>An array of objects.</p>" + table(["Key", "Value", "Description"], field_rows(spec, items, objects, request, "[]."))
+    if isinstance(value.get("type"), list):
+        return f"<p>{type_label(spec, value, objects)}.</p>"
+    rows = field_rows(spec, value, objects, request)
+    if not rows:
+        return f"<p>{type_label(spec, value, objects)}.</p>"
+    return table(["Key", "Value", "Description"], rows)
+
+
+def parameter_rows(spec, parameters, location, objects):
+    rows = []
+    for parameter in parameters:
+        value = resolve(spec, parameter)
+        if value["in"] != location:
+            continue
+        schema = resolve(spec, value["schema"])
+        label = type_label(spec, value["schema"], objects)
+        if value.get("required"):
+            label += ", required"
+        rows.append([f"<code>{escape(value['name'])}</code>", label, details(spec, {**value["schema"], "description": value.get("description", "")}, objects)])
+    return rows
+
+
+def success(operation):
+    return next((status, value) for status, value in operation["responses"].items() if status.startswith("2"))
+
+
+def authenticated(spec, operation):
+    return bool(operation.get("security", spec.get("security", [])))
+
+
+def json_text(value):
+    return json.dumps(value, indent=2, ensure_ascii=False)
+
+
+def example_request(spec, path, method, operation):
+    parameters = [resolve(spec, item) for item in operation.get("parameters", [])]
+    for parameter in parameters:
+        if parameter["in"] == "path":
+            path = path.replace("{" + parameter["name"] + "}", str(parameter["example"]))
+    query = "&".join(f"{item['name']}={item['example']}" for item in parameters if item["in"] == "query" and "example" in item)
+    url = BASE_URL + path + (f"?{query}" if query else "")
+    lines = [f"curl -X {method.upper()} '{url}'" if method != "get" else f"curl '{url}'"]
+    if operation["operationId"] == "login":
+        lines.append("-c cookies.txt")
+    elif authenticated(spec, operation):
+        lines.append("-b cookies.txt -c cookies.txt")
+    for item in parameters:
+        if item["in"] == "header" and "example" in item:
+            lines.append(f"-H '{item['name']}: {item['example']}'")
+    if "requestBody" in operation:
+        example = operation["requestBody"]["content"]["application/json"]["example"]
+        lines.append("-H 'Content-Type: application/json'")
+        lines.append("-d '" + json_text(example).replace("'", "'\\''") + "'")
+    return " \\\n\t".join(lines)
+
+
+def example_response(spec, operation):
+    status, response = success(operation)
+    lines = [f"HTTP/1.1 {status} {STATUS_TEXT[int(status)]}"]
+    content = response.get("content", {})
+    for media in content:
+        lines.append(f"Content-Type: {media}" + ("; charset=utf-8" if media == "application/json" else ""))
+    for name, header in response.get("headers", {}).items():
+        values = resolve(spec, header).get("example")
+        for item in values if isinstance(values, list) else [values]:
+            if item is not None:
+                lines.append(f"{name}: {item}")
+    result = "\n".join(lines)
+    for value in content.values():
+        example = value["example"]
+        result += "\n\n" + (example if isinstance(example, str) else json_text(example))
     return result
 
 
-def operation_content(spec, path, method, operation):
-    parameters = operation.get("parameters", [])
-    result = f'<section id="{operation["operationId"]}" class="api-operation"><h2>{escape(operation["summary"])}</h2><p class="api-route"><code>{method.upper()} {escape(path)}</code></p>'
-    result += paragraph(operation.get("description", ""))
-    result += "<h3>Request headers</h3>"
-    security = operation.get("security", spec.get("security", []))
-    rows = parameter_rows(spec, parameters, "header")
-    if security:
-        rows.insert(
-            0,
-            [
-                "<code>Cookie</code>",
-                "string",
-                "Yes",
-                "session=&lt;token&gt;; use a persistent cookie jar.",
-            ],
-        )
-    if "requestBody" in operation:
-        rows.append(["<code>Content-Type</code>", "string", "Yes", "application/json"])
-    result += table(["Header", "Type", "Required", "Details"], rows)
-    result += "<h3>Path parameters</h3>" + table(
-        ["Parameter", "Type", "Required", "Details"],
-        parameter_rows(spec, parameters, "path"),
-    )
-    result += "<h3>Query parameters</h3>" + table(
-        ["Parameter", "Type", "Required", "Details"],
-        parameter_rows(spec, parameters, "query"),
-    )
-    result += "<h3>Request body</h3>"
-    result += (
-        media_content(spec, operation["requestBody"]["content"])
-        if "requestBody" in operation
-        else paragraph("None.")
-    )
-    result += "<h3>Response headers</h3>" + paragraph(
-        "Content-Type is shown with each response below; 204 has no body. Any authenticated response may renew the session cookie. Infrastructure may add transport/security headers."
-    )
+def response_rows(spec, operation):
     rows = []
-    for status, response in operation["responses"].items():
-        for name, header in resolve(spec, response).get("headers", {}).items():
-            value = resolve(spec, header)
-            rows.append(
-                [
-                    f"<code>{escape(name)}</code>",
-                    escape(status),
-                    escape(
-                        value.get("description", "")
-                        + " "
-                        + constraints(value.get("schema", {}))
-                    ),
-                ]
-            )
-    result += (
-        table(["Header", "Status", "Details"], rows)
-        if rows
-        else paragraph("No additional documented response headers.")
-    )
-    result += "<h3>Responses</h3>"
-    for status, response in operation["responses"].items():
+    for status, response in sorted(operation["responses"].items()):
         value = resolve(spec, response)
-        result += f"<details><summary><code>{escape(status)}</code> {escape(value['description'])}</summary>{media_content(spec, value.get('content', {}), expand_references=False)}</details>"
+        examples = {}
+        for media in value.get("content", {}).values():
+            examples.update(media.get("examples", {}))
+        if not examples:
+            rows.append([f"<code>{escape(status)}</code>", "", text(value["description"])])
+        for name, example in examples.items():
+            code = example["value"].get("code", "")
+            rows.append([f"<code>{escape(status)}</code>", f"<code>{escape(code)}</code>" if code else "", text(example["summary"])])
+    return rows
+
+
+def response_header_rows(spec, operation, objects):
+    rows = []
+    status, response = success(operation)
+    for media in response.get("content", {}):
+        rows.append(["<code>Content-Type</code>", f"<code>{escape(media)}</code>", "Media type of the body."])
+    if authenticated(spec, operation):
+        renewal = spec["components"]["headers"]["SetSession"]
+        rows.append(["<code>Set-Cookie</code>", "string", text(renewal["description"])])
+    for code, value in operation["responses"].items():
+        for name, header in resolve(spec, value).get("headers", {}).items():
+            header = resolve(spec, header)
+            note = f"Sent with status {code}. " if code != status else ""
+            rows.append([f"<code>{escape(name)}</code>", type_label(spec, header.get("schema", {}), objects), note + text(header.get("description", ""))])
+    return rows
+
+
+def operation_content(spec, path, method, operation, objects):
+    parameters = operation.get("parameters", [])
+    result = f'<section id="{escape(operation["operationId"])}" class="api-operation"><h3>{escape(operation["summary"])}</h3>'
+    result += f'<p class="api-route"><code>{method.upper()} {escape(path)}</code></p>' + paragraph(operation.get("description", ""))
+    headers = []
+    if authenticated(spec, operation):
+        headers.append(["<code>Cookie</code>", "string, required", "The <code>session</code> cookie from <code>POST /api/login</code>."])
+    if "requestBody" in operation:
+        headers.append(["<code>Content-Type</code>", "<code>application/json</code>, required", "Media type of the body."])
+    headers += parameter_rows(spec, parameters, "header", objects)
+    columns = ["Key", "Value", "Description"]
+    if headers:
+        result += "<h4>Request headers</h4>" + table(columns, headers)
+    for location, title in (("path", "Path parameters"), ("query", "Query parameters")):
+        rows = parameter_rows(spec, parameters, location, objects)
+        if rows:
+            result += f"<h4>{title}</h4>" + table(columns, rows)
+    if "requestBody" in operation:
+        result += "<h4>Request body</h4>" + schema_content(spec, operation["requestBody"]["content"]["application/json"]["schema"], objects, True)
+    result += "<h4>Responses</h4>" + table(["Status", "Code", "Description"], response_rows(spec, operation))
+    rows = response_header_rows(spec, operation, objects)
+    if rows:
+        result += "<h4>Response headers</h4>" + table(columns, rows)
+    _, response = success(operation)
+    content = response.get("content", {})
+    if "application/json" in content:
+        result += "<h4>Response body</h4>" + schema_content(spec, content["application/json"]["schema"], objects, False)
+    result += f"<h4>Example request</h4><pre><code>{escape(example_request(spec, path, method, operation))}</code></pre>"
+    result += f"<h4>Example response</h4><pre><code>{escape(example_response(spec, operation))}</code></pre>"
     return result + "</section>"
+
+
+def objects_content(spec, objects):
+    """Document every named object that a table links to, including objects those objects link to."""
+    rendered, result = set(), ""
+    while objects - rendered:
+        for name in sorted(objects - rendered):
+            rendered.add(name)
+            schema = spec["components"]["schemas"][name]
+            body = schema_content(spec, {"$ref": f"#/components/schemas/{name}"}, objects, False)
+            result += f'<section id="object-{escape(name.lower())}" class="api-object"><h3>{escape(schema.get("title", name))}</h3>{paragraph(schema.get("description", ""))}{body}</section>'
+    return result
+
+
+def overview(spec, objects):
+    scheme = spec["components"]["securitySchemes"]["session"]
+    protocol = resolve(spec, spec["components"]["parameters"]["VaultProtocol"])
+    error = spec["components"]["schemas"]["Error"]
+    return (
+        '<section id="overview"><h2>Overview</h2>'
+        + paragraph(spec["info"]["description"])
+        + "<h3>Authentication</h3>" + paragraph(scheme["description"])
+        + "<h3>Encrypted vaults</h3>" + paragraph(f"Routes that read or write notes take the `{protocol['name']}` header. " + protocol["description"])
+        + "<h3>Errors</h3>" + paragraph(error["description"])
+        + table(["Key", "Value", "Description"], field_rows(spec, error, objects, False))
+        + "</section>"
+    )
+
+
+def render_reference(spec, template, preview=False):
+    objects = set()
+    toc = '<a href="#overview">Overview</a><a href="client-protocol.html">Client protocol guide</a>'
+    content = (
+        '<section class="docs-hero"><h1>HTTP API reference</h1>'
+        f'<p>Every route of the vylk server, with its headers, parameters, body, responses, and an example. Read the <a href="client-protocol.html">client protocol guide</a> before you build offline sync or encryption.</p>'
+        '<p><a href="openapi.json" download>Download the OpenAPI specification</a></p></section>'
+    )
+    content += overview(spec, objects)
+    for tag in spec["tags"]:
+        anchor = "group-" + docs_markdown.anchor(tag["name"])
+        toc += f'<p><a href="#{anchor}">{escape(tag["name"])}</a></p>'
+        content += f'<section id="{anchor}" class="api-group"><h2>{escape(tag["name"])}</h2>{paragraph(tag.get("description", ""))}</section>'
+        for path, item in spec["paths"].items():
+            for method, operation in item.items():
+                if operation["tags"][0] == tag["name"]:
+                    toc += f'<a href="#{operation["operationId"]}">{escape(operation["summary"])}</a>'
+                    content += operation_content(spec, path, method, operation, objects)
+    body = objects_content(spec, objects)
+    toc += '<p><a href="#objects">Objects</a></p>'
+    content += '<section id="objects" class="api-group"><h2>Objects</h2><p>Objects that appear in the request and response tables above.</p></section>' + body
+    return page(template, "HTTP API reference", content, toc, spec["info"]["version"], preview)
 
 
 def page(template, title, content, toc, version, preview, current="page"):
@@ -277,127 +412,14 @@ def page(template, title, content, toc, version, preview, current="page"):
     return template
 
 
-def render_reference(spec, template, preview=False):
-    toc = '<a href="#top">Overview</a><a href="client-protocol.html">Client protocol guide</a>'
-    content = '<section class="docs-hero"><h1>API reference</h1><p>Build a client for your own VYLK instance. Read the <a href="client-protocol.html">client protocol guide</a> for authentication, offline sync, and encryption.</p><p><a href="openapi.json" download>Download OpenAPI specification</a></p></section>'
-    for tag in spec["tags"]:
-        toc += f"<p>{escape(tag['name'])}</p>"
-        for path, item in spec["paths"].items():
-            for method, operation in item.items():
-                if operation["tags"][0] == tag["name"]:
-                    toc += f'<a href="#{operation["operationId"]}">{escape(operation["summary"])}</a>'
-                    content += operation_content(spec, path, method, operation)
-    toc += '<p>Schemas</p><a href="#schemas">Wire models</a>'
-    content += '<section id="schemas"><h2>Wire models</h2>'
-    for name, schema in spec["components"]["schemas"].items():
-        content += f'<details id="schema-{escape(name)}"><summary>{escape(name)}</summary>{schema_content(spec, schema)}</details>'
-    content += "</section>"
-    return page(
-        template, "API reference", content, toc, spec["info"]["version"], preview
-    )
-
-
-def inline(text):
-    # Escape all source HTML; documentation links can never become script URLs.
-    tokens = re.split(r"(`[^`]+`|\[[^\]]+\]\([^)]+\))", text)
-    result = ""
-    for token in tokens:
-        if token.startswith("`") and token.endswith("`"):
-            result += f"<code>{escape(token[1:-1])}</code>"
-        elif match := re.fullmatch(r"\[([^\]]+)\]\(([^)]+)\)", token):
-            label, url = match.groups()
-            if not (
-                url.startswith(("https://", "http://", "#"))
-                or re.fullmatch(r"[A-Za-z0-9_./-]+", url)
-            ):
-                raise ValueError("Unsafe documentation link")
-            result += f'<a href="{escape(url, quote=True)}">{escape(label)}</a>'
-        else:
-            result += escape(token)
-    return result
-
-
 def render_guide(guide, spec, template, preview=False):
-    content, toc, paragraph_lines = [], [], []
-    section_open = False
-    code_lines = None
-    list_kind = None
-    heading_ids = set()
-
-    def flush():
-        if paragraph_lines:
-            content.append("<p>" + inline(" ".join(paragraph_lines)) + "</p>")
-            paragraph_lines.clear()
-
-    def end_list():
-        nonlocal list_kind
-        if list_kind:
-            content.append(f"</{list_kind}>")
-            list_kind = None
-
-    for line in guide.splitlines():
-        if line.startswith("```"):
-            flush()
-            end_list()
-            if code_lines is None:
-                code_lines = []
-            else:
-                content.append(
-                    "<pre><code>" + escape("\n".join(code_lines)) + "</code></pre>"
-                )
-                code_lines = None
-        elif code_lines is not None:
-            code_lines.append(line)
-        elif line.startswith("# "):
-            flush()
-            end_list()
-            content.append(
-                '<section class="docs-hero"><h1>' + inline(line[2:]) + "</h1>"
-            )
-            section_open = True
-        elif match := re.match(r"^(#{2,4}) (.+)$", line):
-            flush()
-            end_list()
-            level, text = len(match[1]), match[2]
-            anchor = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
-            if anchor in heading_ids:
-                raise ValueError("Duplicate guide heading")
-            heading_ids.add(anchor)
-            if level == 2:
-                if section_open:
-                    content.append("</section>")
-                content.append(f'<section id="{anchor}">')
-                section_open = True
-                toc.append(f'<a href="#{anchor}">{escape(text)}</a>')
-            content.append(f"<h{level}>{inline(text)}</h{level}>")
-        elif not line.strip():
-            flush()
-            end_list()
-        elif match := re.match(r"^([-*]|[0-9]+\.) (.+)$", line):
-            flush()
-            kind = "ul" if match[1] in ("-", "*") else "ol"
-            if kind != list_kind:
-                end_list()
-                content.append(f"<{kind}>")
-                list_kind = kind
-            content.append("<li>" + inline(match[2]) + "</li>")
-        elif re.match(r"^(\s{4}|>|\|)", line):
-            raise ValueError(
-                "Guide uses an unsupported Markdown block; extend and test the renderer before publishing"
-            )
-        else:
-            end_list()
-            paragraph_lines.append(line.strip())
-    flush()
-    end_list()
-    if code_lines is not None or not section_open:
-        raise ValueError("Incomplete Markdown guide")
-    content.append("</section>")
+    document = docs_markdown.render(guide)
+    toc = "".join(f'<a href="#{anchor}">{escape(text)}</a>' for anchor, text in document.toc)
     return page(
         template,
-        "Client protocol guide",
-        "".join(content),
-        '<a href="index.html">API reference</a>' + "".join(toc),
+        document.title,
+        document.content,
+        '<a href="index.html">API reference</a>' + toc,
         spec["info"]["version"],
         preview,
         current="location",

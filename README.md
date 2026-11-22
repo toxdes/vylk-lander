@@ -1,15 +1,15 @@
 # VYLK lander
 
 The VYLK lander is an independent static website for the self-hosted Markdown
-notes app. It contains the landing page, installation guidance, and detailed
-documentation without requiring a running VYLK server.
+notes app. It contains the landing page and renders the documentation that lives
+in the VYLK repository's `docs/` directory.
 
 ## Local preview
 
 Open `index.html` directly, or serve the repository with any static file
 server. The local `version.js` fallback lets install links render during
 development; it is not a promise of the latest release. Build first and serve
-`dist` to preview the generated API reference. Use a version-aware build before
+`dist` to preview the generated documentation. Use a version-aware build before
 deployment.
 
 ## Cloudflare Pages
@@ -29,10 +29,11 @@ It writes the result to `dist/version.js`. The generated site uses that value
 for release links and Docker examples. The deployed site does not fetch the
 version or release metadata when visitors open it.
 
-It fetches `VERSION`, `docs/api/openapi.json`, and
-`docs/api/client-protocol.md` from that exact `vX.Y.Z` tag. The API reference at
-`/docs/api/` and its protocol guide are generated at build time using the
-existing docs typography, colors, header, and responsive layout. No runtime
+It fetches `VERSION`, the user guides listed in `scripts/docs_pages.py`,
+`docs/api/openapi.json`, and `docs/api/client-protocol.md` from that exact
+`vX.Y.Z` tag. The guides become `/docs/*.html`, and the API reference and its
+protocol guide become `/docs/api/`. All pages use the existing docs typography,
+colors, header, and responsive layout. No runtime
 documentation framework or live API console is shipped. The downloadable
 OpenAPI specification is suitable for other viewers and SDK tooling.
 
@@ -52,11 +53,15 @@ VYLK_VERSION="$(cat /path/to/vylk/worktree/VERSION)" VYLK_API_SOURCE=/path/to/vy
 
 Use that worktree's actual `VERSION`. This local override is visibly labeled
 as a preview and must not be set in production. Build dependencies are Python 3
-(3.9 or newer); there are no additional generation packages. Guide Markdown
-currently supports headings, paragraphs, flat lists, inline code, links, and fenced code.
-Unsupported blocks fail explicitly; extend the renderer and tests together
-rather than silently dropping new guide content. The canonical API docs live
-in VYLK, not this repository; no generated HTML or copied source is committed.
+(3.9 or newer); there are no additional generation packages.
+
+`scripts/docs_markdown.py` renders headings, paragraphs, flat lists, tables,
+fenced code, bold text, inline code, and links. Unsupported blocks fail the
+build; extend the renderer and its tests together. Relative `.md` links become
+links to the generated pages, and other relative links point to the file on
+GitHub at the same tag. A link to a missing page or anchor fails the build. All
+documentation lives in VYLK, not this repository; no generated HTML or copied
+source is committed.
 
 ## Checks
 
@@ -76,8 +81,11 @@ bun tests/api.cjs
 ```
 
 The browser checks need Playwright available to the test runner, use the installed
-Chrome binary, and save screenshots under `/tmp`. The documentation check covers
-the E2EE help anchor, current configuration, and desktop/mobile overflow.
+Chrome binary, and save screenshots under `/tmp`. `tests/install.cjs`,
+`tests/docs.cjs`, `tests/api.cjs`, and `tests/announcements.cjs` read `dist`, so
+build first. The documentation check covers every generated page, the legacy
+anchor redirects, the encryption page, the environment variables, and
+desktop and mobile overflow.
 
 ## Refresh product media
 
@@ -138,10 +146,13 @@ available without JavaScript.
 
 ## Product documentation
 
-The application source is the authority for feature and security claims. Keep
-`docs/index.html` and the homepage aligned with it when releasing app changes.
-The app's encryption help links target `/docs/#end-to-end-encryption`; keep that
-anchor stable. E2EE covers note titles, tags, bodies, and offline edits, but does
+The application source is the authority for feature and security claims, and
+VYLK's `docs/` is the only copy of the documentation. Keep the homepage aligned
+with it when releasing app changes. The app's encryption help links target
+`/docs/encryption.html`. Older releases target `/docs/#end-to-end-encryption`;
+`docs/index.html` redirects that and the other former section anchors, listed
+in `LEGACY_ANCHORS` in `scripts/docs_pages.py`, and the build fails if a
+redirect target disappears. E2EE covers note titles, tags, bodies, and offline edits, but does
 not hide all metadata or protect against a compromised server replacing the
 browser application. HTTPS is required on remote devices; localhost is the
 local-development exception. Do not advertise the removed server-side file

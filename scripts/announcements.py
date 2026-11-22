@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import date
 from html import escape
 
-from api_reference import inline
+from docs_markdown import inline
 
 VERSION = r"v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
 RELEASE_HEADING = re.compile(rf"^## ({VERSION})$", re.MULTILINE)

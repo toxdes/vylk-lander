@@ -41,3 +41,12 @@
   .api-page .table-wrap { max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .api-page { scroll-behavior: auto; } html:has(.api-page) { scroll-behavior: auto; } }
+.api-page .toc a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.api-page .toc .toc-section { padding-left: 12px; }
+.api-page .docs-hero > p:not(:last-child) { margin-bottom: 18px; }
+.api-page .table-wrap td:not(:last-child) code { white-space: nowrap; }
+.api-page pre { tab-size: 4; }
+.api-page .docs-main .api-operation, .api-page .docs-main .api-object { padding-block: 56px; }
+.api-page .docs-main .api-operation h3, .api-page .docs-main .api-object h3 { font-size: 26px; margin-top: 0; }
+.api-page .docs-main h4 { font-size: 16px; margin: 32px 0 10px; }
+.api-page .api-variant { margin-top: 20px; }

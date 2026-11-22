@@ -11,6 +11,7 @@ from urllib.error import HTTPError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import api_reference
+import docs_markdown
 import build
 
 
@@ -33,32 +34,71 @@ class HTMLInventory(HTMLParser):
 
 SPEC = {
     "openapi": "3.1.0",
-    "info": {"title": "Test", "version": "1.2.3"},
+    "info": {"title": "Test", "version": "1.2.3", "description": "Test API."},
     "security": [{"session": []}],
-    "tags": [{"name": "Notes"}],
+    "tags": [{"name": "Notes", "description": "Notes."}],
     "paths": {
-        "/api/notes": {
-            "get": {
-                "operationId": "listNotes",
-                "summary": "List notes",
+        "/api/notes/{id}": {
+            "post": {
+                "operationId": "saveNote",
+                "summary": "Save a note",
                 "tags": ["Notes"],
+                "parameters": [
+                    {"name": "id", "in": "path", "required": True, "schema": {"type": "string"}, "example": "n1"},
+                    {"$ref": "#/components/parameters/VaultProtocol"},
+                    {"name": "dry", "in": "query", "schema": {"type": "boolean"}, "example": True},
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/Note"},
+                            "example": {"title": "It's here"},
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Notes",
+                        "description": "Saved.",
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/Note"}
+                                "schema": {"$ref": "#/components/schemas/Note"},
+                                "example": {"title": "It's here"},
                             }
                         },
-                    }
+                    },
+                    "409": {
+                        "description": "Conflict.",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Error"},
+                                "examples": {
+                                    "note_revision_conflict": {
+                                        "summary": "The note changed.",
+                                        "value": {"code": "note_revision_conflict", "error": "x"},
+                                    }
+                                },
+                            }
+                        },
+                    },
                 },
             }
         }
     },
     "components": {
+        "securitySchemes": {"session": {"type": "apiKey", "in": "cookie", "name": "session", "description": "Cookie."}},
+        "headers": {"SetSession": {"description": "Renewed cookie.", "schema": {"type": "string"}}},
+        "parameters": {
+            "VaultProtocol": {"name": "X-Vylk-Vault-Protocol", "in": "header", "description": "Encrypted vaults.", "schema": {"type": "string", "const": "1"}}
+        },
         "schemas": {
-            "Note": {"type": "object", "properties": {"title": {"type": "string"}}}
-        }
+            "Note": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {"title": {"type": "string"}, "body": {"$ref": "#/components/schemas/Envelope"}},
+            },
+            "Envelope": {"title": "Envelope", "type": "object", "properties": {"v": {"type": "integer", "const": 1}}},
+            "Error": {"type": "object", "description": "Errors.", "properties": {"code": {"type": "string"}, "error": {"type": "string"}}},
+        },
     },
 }
 GUIDE = "# Client guide\n\nUse `session` cookies.\n\n## Sync\n\nNever discard pending edits.\n"
@@ -69,13 +109,13 @@ class ReferenceTests(unittest.TestCase):
     def test_local_references_and_unique_routes(self):
         api_reference.validate_specification(SPEC)
         broken = copy.deepcopy(SPEC)
-        broken["paths"]["/api/notes"]["get"]["responses"]["200"]["content"][
+        broken["paths"]["/api/notes/{id}"]["post"]["responses"]["200"]["content"][
             "application/json"
         ]["schema"]["$ref"] = "https://invalid/schema"
         with self.assertRaises(ValueError):
             api_reference.validate_specification(broken)
         broken = copy.deepcopy(SPEC)
-        broken["paths"]["/api/notes"]["get"]["tags"] = ["Undeclared"]
+        broken["paths"]["/api/notes/{id}"]["post"]["tags"] = ["Undeclared"]
         with self.assertRaises(ValueError):
             api_reference.validate_specification(broken)
 
@@ -86,22 +126,35 @@ class ReferenceTests(unittest.TestCase):
             "Path parameters",
             "Query parameters",
             "Request body",
-            "Response headers",
             "Responses",
+            "Response headers",
+            "Response body",
+            "Example request",
+            "Example response",
         ):
-            self.assertIn(section, html)
+            self.assertIn(f"<h4>{section}</h4>", html)
         inventory = HTMLInventory()
         inventory.feed(html)
         self.assertEqual(len(inventory.ids), len(set(inventory.ids)))
         for href in inventory.links:
             if href.startswith("#"):
                 self.assertIn(href[1:], inventory.ids)
-            elif href.startswith("index.html#"):
-                self.assertIn(href.split("#")[1], inventory.ids)
+        self.assertIn("object-envelope", inventory.ids)
         self.assertEqual(inventory.scripts, [])
         self.assertIn("../style.css", html)
         self.assertIn("JetBrains+Mono", html)
         self.assertNotIn("{{", html)
+
+    def test_tables_and_examples_follow_the_specification(self):
+        html = api_reference.render_reference(SPEC, TEMPLATE)
+        self.assertIn("<th scope=\"col\">Key</th><th scope=\"col\">Value</th><th scope=\"col\">Description</th>", html)
+        self.assertIn("<td><code>title</code></td><td>string, required</td>", html)
+        self.assertIn("<td><code>X-Vylk-Vault-Protocol</code></td><td><code>1</code></td>", html)
+        self.assertIn("<td><code>409</code></td><td><code>note_revision_conflict</code></td><td>The note changed.</td>", html)
+        self.assertIn("curl -X POST &#x27;http://localhost:8080/api/notes/n1?dry=True&#x27;", html)
+        # A single quote in the body must not end the shell argument.
+        self.assertIn("It&#x27;\\&#x27;&#x27;s here", html)
+        self.assertIn("HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8", html)
 
     def test_guide_escapes_html_and_rejects_unsafe_links(self):
         html = api_reference.render_guide(
@@ -110,10 +163,10 @@ class ReferenceTests(unittest.TestCase):
         self.assertIn("&lt;script&gt;", html)
         self.assertIn("<code>session</code>", html)
         with self.assertRaises(ValueError):
-            api_reference.inline("[bad](javascript:alert)")
+            docs_markdown.inline("[bad](javascript:alert)")
         with self.assertRaises(ValueError):
             api_reference.render_guide(
-                GUIDE + "\n| unsupported table |\n", SPEC, TEMPLATE
+                GUIDE + "\n> unsupported quote\n", SPEC, TEMPLATE
             )
 
     def test_preview_is_explicit(self):
@@ -142,7 +195,7 @@ class BuildTests(unittest.TestCase):
         error = HTTPError(url, 404, "Not Found", {}, None)
         with patch.object(build, "urlopen", side_effect=error) as fetch:
             with self.assertRaisesRegex(
-                ValueError, "Publish a release containing docs/api"
+                ValueError, "Publish a release containing docs/"
             ):
                 build.download(url)
             fetch.assert_called_once()
@@ -172,11 +225,12 @@ class BuildTests(unittest.TestCase):
             patch.dict(os.environ, {}, clear=True),
             patch.object(build, "download", side_effect=fetch) as download,
         ):
-            spec, guide, local = build.documentation("1.2.3")
+            spec, guide, pages, local = build.documentation("1.2.3")
             self.assertEqual(spec["info"]["version"], "1.2.3")
             self.assertEqual(guide, GUIDE)
+            self.assertEqual(set(pages), {name for name, _, _ in build.PAGES})
             self.assertFalse(local)
-            self.assertEqual(len(download.call_args_list), 3)
+            self.assertEqual(len(download.call_args_list), 3 + len(build.PAGES))
             self.assertTrue(
                 all("/v1.2.3/" in call.args[0] for call in download.call_args_list)
             )
@@ -185,12 +239,14 @@ class BuildTests(unittest.TestCase):
         with (
             patch.dict(os.environ, {}, clear=True),
             patch.object(
-                build, "download", side_effect=["9.9.9", json.dumps(SPEC), GUIDE]
+                build,
+                "download",
+                side_effect=["9.9.9", json.dumps(SPEC), GUIDE] + [GUIDE] * len(build.PAGES),
             ) as download,
         ):
             with self.assertRaises(ValueError):
                 build.documentation("1.2.3")
-            self.assertEqual(download.call_count, 3)
+            self.assertEqual(download.call_count, 3 + len(build.PAGES))
 
     def test_failed_acquisition_preserves_previous_output(self):
         with tempfile.TemporaryDirectory() as directory:

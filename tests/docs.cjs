@@ -3,7 +3,19 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
-const encryptionAnchor = '#end-to-end-encryption';
+// Run after a build: the pages are generated from VYLK's docs/ into dist/docs/.
+const docs = path.resolve(__dirname, '../dist/docs');
+const pages = ['index.html', 'how-to.html', 'concepts.html', 'encryption.html', 'cli-reference.html'];
+const legacy = {
+  'end-to-end-encryption': 'encryption.html',
+  install: 'index.html#install-vylk',
+  config: 'cli-reference.html#environment-variables',
+  security: 'how-to.html#keep-your-notes-safe',
+};
+const url = target => {
+  const [file, anchor] = target.split('#');
+  return pathToFileURL(path.join(docs, file)).href + (anchor ? '#' + anchor : '');
+};
 
 async function checkDocument(page) {
   const brokenAnchors = await page.locator('a[href^="#"]').evaluateAll(links =>
@@ -12,59 +24,52 @@ async function checkDocument(page) {
   assert.deepEqual(brokenAnchors, [], 'Every local section link must resolve');
   assert.ok(await page.evaluate(() =>
     document.documentElement.scrollWidth <= innerWidth + 1), 'No page-wide horizontal overflow');
-  for (const command of await page.locator('code').allTextContents()) {
-    if (command.startsWith('go build')) {
-      assert.match(command, /-X vylk\/internal\/server\.version=/);
-      assert.match(command, /-o vylk \.\/cmd\/vylk$/);
-    }
-  }
+  assert.doesNotMatch(await page.locator('main').textContent(), /__VYLK_VERSION__|\{\{/);
 }
 
 (async () => {
-  const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome', headless: true });
   try {
     for (const width of [1440, 390]) {
       const page = await browser.newPage({ viewport: { width, height: 1000 } });
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
-      await page.goto(pathToFileURL(path.resolve(__dirname, '../docs/index.html')).href + encryptionAnchor);
-      await page.evaluate(() => document.fonts.ready);
-      const encryption = page.locator(encryptionAnchor);
-      assert.equal(await encryption.locator('h2').textContent(), 'End-to-end encryption');
-      assert.match(await encryption.textContent(), /Plain HTTP on a LAN IP does not qualify/);
-      assert.match(await encryption.textContent(), /lose both the passphrase and recovery key/);
-      assert.match(await encryption.textContent(), /not revoke a key or old wrapped-key copy/);
-      const variables = await page.locator('#config tbody tr td:first-child').allTextContents();
-      assert.ok(variables.includes('VYLK_DISABLE_VAULT_CHANGES'));
-      assert.ok(variables.includes('VYLK_NO_BROWSER'));
-      assert.ok(variables.includes('VYLK_PASSWORD_FILE'));
-      assert.ok(!variables.some(variable => /^VYLK_(ENCRYPTION|MIGRATE_ENCRYPTION)/.test(variable)));
-      const offline = await page.locator('#offline').textContent();
-      assert.match(offline, /Sign-out retains cached notes and pending edits/);
-      assert.match(offline, /Keep changes/);
-      assert.match(offline, /Switch permanently discards/);
-      assert.doesNotMatch(offline, /sign-out clears|With no pending edits/);
-      const features = await page.locator('#features').textContent();
-      assert.match(features, /Reduce motion/);
-      assert.match(features, /Ctrl\+4/);
-      assert.match(features, /Inter at 125%/);
-      await checkDocument(page);
-      assert.doesNotMatch(await page.locator('main').textContent(), /After the Toxdes tap is published|Until then/);
-      await encryption.scrollIntoViewIfNeeded();
-      await page.screenshot({ path: `/tmp/vylk-docs-e2ee-${width}.png` });
+      for (const file of pages) {
+        await page.goto(url(file));
+        await page.evaluate(() => document.fonts.ready);
+        assert.equal(await page.locator('h1').count(), 1, `${file} has one h1`);
+        assert.equal(await page.locator(`.toc a[href="${file}"][aria-current="page"]`).count(), 2, `${file} marks itself in both outlines`);
+        await checkDocument(page);
+        await page.screenshot({ path: `/tmp/vylk-docs-${file.replace('.html', '')}-${width}.png`, fullPage: false });
+      }
 
-      await page.goto(pathToFileURL(path.resolve(__dirname, '../index.html')).href);
-      await page.evaluate(() => document.fonts.ready);
-      const help = page.locator('.why a[href="docs/index.html' + encryptionAnchor + '"]');
-      assert.equal(await help.count(), 1, 'Homepage encryption feature links to the guide');
-      assert.doesNotMatch(await page.locator('.why').textContent(), /Titles and tags are stored separately/);
-      await checkDocument(page);
-      await help.scrollIntoViewIfNeeded();
-      await page.screenshot({ path: `/tmp/vylk-home-features-${width}.png` });
+      for (const [anchor, target] of Object.entries(legacy)) {
+        await page.goto(url('index.html') + '#' + anchor);
+        await page.waitForURL(url(target));
+      }
+
+      await page.goto(url('encryption.html'));
+      const encryption = await page.locator('main').textContent();
+      assert.match(encryption, /is not a secure context/);
+      assert.match(encryption, /lose both the encryption password and the recovery key/);
+      assert.match(encryption, /A wrapper or vault key that someone copied earlier still works/);
+
+      await page.goto(url('cli-reference.html'));
+      const variables = await page.locator('#environment-variables tbody tr td:first-child').allTextContents();
+      for (const variable of ['VYLK_PASSWORD_FILE', 'VYLK_NO_BROWSER', 'VYLK_DISABLE_VAULT_CHANGES']) {
+        assert.ok(variables.includes(variable), `${variable} is documented`);
+      }
+      assert.ok(!variables.some(variable => /^VYLK_(ENCRYPTION|MIGRATE_ENCRYPTION)/.test(variable)));
+
+      await page.goto(url('index.html'));
+      assert.match(await page.locator('#install-vylk').textContent(), /toxdes\/vylk:\d+\.\d+\.\d+/);
+
+      await page.goto(pathToFileURL(path.resolve(docs, '../index.html')).href);
+      assert.equal(await page.locator('.why a[href="docs/encryption.html"]').count(), 1, 'Homepage encryption feature links to the guide');
       assert.deepEqual(errors, []);
       await page.close();
     }
-    console.log('Documentation and feature links passed at desktop and mobile sizes.');
+    console.log('Documentation pages, legacy anchors, and feature links passed at desktop and mobile sizes.');
   } finally {
     await browser.close();
   }
