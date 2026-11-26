@@ -1,3 +1,4 @@
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -25,6 +26,10 @@ def sources(**overrides):
         pages[name] = f"# {name}\n\n{headings}Text.\n"
     pages.update(overrides)
     return pages
+
+
+def render(pages):
+    return docs_pages.render_pages(pages, TEMPLATE, "1.2.3", "v1.2.3", docs_pages.navigation(pages, "# Client guide\n"))
 
 
 class MarkdownTests(unittest.TestCase):
@@ -65,12 +70,7 @@ class PageTests(unittest.TestCase):
         self.assertEqual(link("#local"), "#local")
 
     def test_pages_render_with_navigation_version_and_legacy_redirect(self):
-        pages = docs_pages.render_pages(
-            sources(**{"how-to.md": "# How-to guides\n\n## Write and organize\n\n## Use other devices\n\n## Keep your notes safe\n\nUse `__VYLK_VERSION__`.\n"}),
-            TEMPLATE,
-            "1.2.3",
-            "v1.2.3",
-        )
+        pages = render(sources(**{"how-to.md": "# How-to guides\n\n## Write and organize\n\n## Use other devices\n\n## Keep your notes safe\n\nUse `__VYLK_VERSION__`.\n"}))
         self.assertEqual(set(pages), {output for _, output, _ in docs_pages.PAGES})
         self.assertIn("<code>1.2.3</code>", pages["how-to.html"])
         self.assertIn('<a href="how-to.html" aria-current="page">How-to guides</a>', pages["how-to.html"])
@@ -79,24 +79,32 @@ class PageTests(unittest.TestCase):
         self.assertIn('"end-to-end-encryption": "encryption.html"', pages["index.html"])
         self.assertIn("https://github.com/toxdes/vylk/blob/v1.2.3/docs/how-to.md", pages["how-to.html"])
 
+    def test_every_page_lists_every_page_in_one_order(self):
+        pages = render(sources())
+        expected = ["index.html", "how-to.html", "concepts.html", "encryption.html", "cli-reference.html",
+                    "api/index.html", "api/client-protocol.html"]
+        for output, html in pages.items():
+            with self.subTest(output=output):
+                outline = html.split('<div class="api-desktop-outline">')[1].split("</div>")[0]
+                links = [href for href in re.findall(r'<a href="([^"]+)"', outline) if not href.startswith("#")]
+                self.assertEqual(links, expected)
+        self.assertIn('<a href="api/index.html">HTTP API reference</a><a href="api/client-protocol.html">Client guide</a>', pages["index.html"])
+
+    def test_sidebar_links_resolve_from_the_api_folder(self):
+        nav = [("index.html", "Start"), ("api/index.html", "API"), ("api/client-protocol.html", "Guide")]
+        html = docs_pages.sidebar(nav, "api/index.html", [("sync", "Sync", 1), ("push", "Push", 2)])
+        self.assertEqual(html, '<a href="../index.html">Start</a><a href="index.html" aria-current="page">API</a>'
+                         '<a class="toc-section" href="#sync">Sync</a><a class="toc-section toc-subsection" href="#push">Push</a>'
+                         '<a href="client-protocol.html">Guide</a>')
+
     def test_broken_internal_links_fail_the_build(self):
         for text in ("[missing](how-to.md#nowhere)", "[missing](#nowhere)"):
             with self.subTest(text=text), self.assertRaises(ValueError):
-                docs_pages.render_pages(
-                    sources(**{"concepts.md": f"# Concepts\n\n## Saving and sync\n\n{text}\n"}),
-                    TEMPLATE,
-                    "1.2.3",
-                    "v1.2.3",
-                )
+                render(sources(**{"concepts.md": f"# Concepts\n\n## Saving and sync\n\n{text}\n"}))
 
     def test_missing_legacy_redirect_target_fails_the_build(self):
         with self.assertRaisesRegex(ValueError, "install-vylk"):
-            docs_pages.render_pages(
-                sources(**{"getting-started.md": "# Getting started\n\n## Install\n"}),
-                TEMPLATE,
-                "1.2.3",
-                "v1.2.3",
-            )
+            render(sources(**{"getting-started.md": "# Getting started\n\n## Install\n"}))
 
 
 if __name__ == "__main__":

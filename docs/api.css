@@ -43,6 +43,7 @@
 @media (prefers-reduced-motion: reduce) { .api-page { scroll-behavior: auto; } html:has(.api-page) { scroll-behavior: auto; } }
 .api-page .toc a[aria-current="page"] { color: var(--ink); font-weight: 600; }
 .api-page .toc .toc-section { padding-left: 12px; }
+.api-page .toc .toc-subsection { padding-left: 24px; }
 .api-page .docs-hero > p:not(:last-child) { margin-bottom: 18px; }
 .api-page .table-wrap td:not(:last-child) code { white-space: nowrap; }
 .api-page pre { tab-size: 4; }
