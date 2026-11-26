@@ -4,7 +4,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 (async () => {
-  const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
   try {
     for (const scenario of [
       { name: 'wall and floor bank shot', positions: [[1080, 260]], pull: [-137, -11], caught: 0 },
@@ -13,7 +13,9 @@ const { pathToFileURL } = require('node:url');
       { name: 'right of the old narrow slot', positions: [[128, 700]], pull: [0, -10], caught: 0 },
       { name: 'close shot waits for the lid', positions: [[120, 842]], pull: [0, -6], caught: 0, close: true },
       { name: 'mobile off-center top entry', positions: [[128, 450]], pull: [0, -10], caught: 0, viewport: { width: 390, height: 844 } },
-      { name: 'body side hit bounces without scoring', positions: [[200, 900]], pull: [10, 0], caught: null }
+      { name: 'body side hit bounces without scoring', positions: [[200, 900]], pull: [10, 0], caught: null },
+      { name: 'paper balanced on the rim comes back promptly', positions: [[49, 700]], pull: [0, -6], caught: null, settles: true },
+      { name: 'paper wedged beside the bin comes back promptly', positions: [[25, 700]], pull: [0, -6], caught: null, settles: true }
     ]) {
       const page = await browser.newPage({ viewport: scenario.viewport || { width: 1440, height: 1000 } });
       const errors = [];
@@ -52,10 +54,13 @@ const { pathToFileURL } = require('node:url');
       await page.mouse.move(x + scenario.pull[0], y + scenario.pull[1], { steps: 8 });
       assert.equal(await page.locator('.game-target,.game-trajectory').count(), 0);
       await page.mouse.up();
+      const released = Date.now();
       if (scenario.caught === null) {
         await page.waitForFunction(() => !document.querySelector('.flying-paper'), null, { timeout: 10000 });
         assert.equal(await page.locator('.paper-discarded').count(), 0);
-        assert.equal((await page.evaluate(() => window.evidence)).opened, null, 'A side hit must not open the lid');
+        // Settled paper returns soon, not after the eight-second flight limit.
+        if (scenario.settles) assert.ok(Date.now() - released < 2500, `${scenario.name}: back after ${Date.now() - released} ms`);
+        else assert.equal((await page.evaluate(() => window.evidence)).opened, null, 'A side hit must not open the lid');
         assert.deepEqual(errors, []);
         console.log('PASS', scenario.name);
         await page.close();

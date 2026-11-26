@@ -45,13 +45,28 @@
   let score = 0;
   let finishingRound = false;
   let lidOpenedAt = 0;
-  let binRect = null;
+  let geometry = null;
+  let binShift = 0;
+  let patrolFrameId = 0;
+  let patrolEpoch = performance.now() / 1000;
+  let levelIndex = 0;
   let noteClicked = false;
   let hadPaperBalls = false;
   let decorationPauseTimer = 0;
   const invitation = document.createElement('span');
   invitation.className = 'note-invitation';
-  invitation.textContent = 'What if you clicked on a note?';
+  const NAH = '"Nah I\'d win"';
+  // The last level ends the run with a dialog, then play restarts at level one.
+  const LEVELS = [
+    { invite: 'What if you clicked on a note?' },
+    { invite: `level 2: are you ${NAH} guy?`, patrol: { speed: 75, minSweep: 5.2 } },
+    { invite: `level 3: are you ${NAH} guy?`, patrol: { speed: 165, minSweep: 3 }, power: 1.3, bounce: .45 },
+    { invite: `level 4: are you ${NAH} guy?`, patrol: { speed: 240, minSweep: 2.2 }, power: 1.45, bounce: .6 },
+    { invite: `level 5: are you ${NAH} guy?`, patrol: { speed: 310, minSweep: 1.8 }, power: 1.6, bounce: .7 }
+  ];
+  // Mouth of the 150x160 bin artwork, in its own pixels.
+  const MOUTH = { left: 28, right: 122, top: 52, bottom: 145 };
+  invitation.textContent = LEVELS[0].invite;
   invitation.setAttribute('role', 'status');
   invitation.setAttribute('aria-live', 'polite');
   invitation.setAttribute('aria-atomic', 'true');
@@ -75,13 +90,40 @@
     const rect = el.getBoundingClientRect();
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   };
+  const clock = now => now / 1000 - patrolEpoch;
+  function binGeometry() {
+    if (geometry) return geometry;
+    const rect = bin.getBoundingClientRect(), left = rect.left - binShift;
+    const width = document.documentElement.clientWidth, patrol = LEVELS[levelIndex].patrol;
+    const base = { left: left + MOUTH.left, right: left + MOUTH.right, top: rect.top + MOUTH.top, bottom: rect.top + MOUTH.bottom };
+    const range = Math.max(0, width - 2 * left - rect.width);
+    geometry = { base, patrol: patrol ? { base, range, sweep: Math.max(patrol.minSweep, range / patrol.speed) } : null };
+    return geometry;
+  }
+  function paintBin(shift) {
+    if (shift === binShift) return;
+    binShift = shift;
+    bin.style.transform = shift ? `translate3d(${shift}px,0,0)` : '';
+  }
+  function patrolTick(now) {
+    patrolFrameId = 0;
+    const { patrol } = binGeometry();
+    if (!patrol || !bin.classList.contains('is-visible')) return;
+    // Interpolated balls are drawn one step behind the clock; draw the bin there too.
+    paintBin(physics.binAt(patrol, clock(now) - physics.DT).shift);
+    patrolFrameId = requestAnimationFrame(patrolTick);
+  }
+  function syncClock(scene, now) {
+    scene.time = clock(now);
+    if (scene.patrol) scene.bin = physics.binAt(scene.patrol, scene.time);
+  }
   function world(currentNote) {
-    const rect = binRect || (binRect = bin.getBoundingClientRect());
-    return {
+    const { base, patrol } = binGeometry(), level = LEVELS[levelIndex];
+    const scene = {
       width: document.documentElement.clientWidth,
       floor: window.innerHeight - 8,
       gravity: Math.max(700, window.innerHeight * 1.25),
-      bin: { left: rect.left + 28, right: rect.left + 122, top: rect.top + 52, bottom: rect.top + 145 },
+      power: level.power, bounce: level.bounce, patrol, bin: base,
       bodies: notes.flatMap((note, id) => {
         if (note === currentNote || !note.classList.contains('paper-ready') || note.classList.contains('paper-discarded')) return [];
         const position = center(note);
@@ -89,6 +131,8 @@
         return [{ ...position, homeX: position.x, homeY: position.y, id, vx: 0, vy: 0, radius: 24, angle: 0, spin: 0, time: 0, bounces: 0, awake: false }];
       })
     };
+    syncClock(scene, performance.now());
+    return scene;
   }
   function announce(text) { if (status.textContent !== text) status.textContent = text; }
   function setLid(open) {
@@ -103,8 +147,17 @@
     hadPaperBalls = remaining;
     const text = remaining ? 'Drag and release to launch'
       : uncrumpledNotes === 1 ? 'Yo can you do three bounces?'
-      : noteClicked ? 'What if you clicked more?' : 'What if you clicked on a note?';
-    if (invitation.textContent !== text) invitation.textContent = text;
+      : noteClicked ? 'What if you clicked more?' : LEVELS[levelIndex].invite;
+    if (invitation.textContent !== text) {
+      const [before, after] = text.split(NAH);
+      if (after === undefined) invitation.textContent = text;
+      else {
+        const accent = document.createElement('span');
+        accent.className = 'invite-accent';
+        accent.textContent = NAH;
+        invitation.replaceChildren(before, accent, after);
+      }
+    }
     return remaining;
   }
   function pauseDecorations() {
@@ -118,9 +171,15 @@
     const remaining = updateHelp();
     if (bin.classList.contains('is-visible') !== remaining) bin.classList.toggle('is-visible', remaining);
     if (layer.classList.contains('has-balls') !== remaining) layer.classList.toggle('has-balls', remaining);
+    if (remaining && !patrolFrameId && binGeometry().patrol) patrolFrameId = requestAnimationFrame(patrolTick);
   }
-  function paint(shot) {
-    const { x, y, angle } = shot.ball;
+  // alpha < 1 draws between the previous and current fixed steps, so motion
+  // stays even when display refreshes and 120 Hz steps do not line up.
+  function paint(shot, alpha = 1) {
+    const ball = shot.ball, back = 1 - alpha;
+    const x = ball.x - (ball.x - (ball.prevX ?? ball.x)) * back;
+    const y = ball.y - (ball.y - (ball.prevY ?? ball.y)) * back;
+    const angle = ball.angle - (ball.angle - (ball.prevAngle ?? ball.angle)) * back;
     if (shot.paintedX !== x || shot.paintedY !== y) {
       shot.sprite.style.transform = `translate3d(${x - 28}px,${y - 28}px,0)`;
       shot.paintedX = x;
@@ -182,7 +241,7 @@
     if (!active || active.phase !== 'aim' || active.pointerId !== event.pointerId) return;
     const dx = event.clientX - active.pointer.x, dy = event.clientY - active.pointer.y;
     const length = Math.hypot(dx, dy);
-    const maxPull = innerWidth < 600 ? 100 : 140;
+    const maxPull = physics.maxPull(active.world.width);
     const ratio = length > maxPull ? maxPull / length : 1;
     active.pull = { x: dx * ratio, y: dy * ratio };
     queuePull();
@@ -223,17 +282,17 @@
   }
   function smoke() {
     if (reducedMotion.matches) return;
-    const rect = binRect || (binRect = bin.getBoundingClientRect());
     const fragment = document.createDocumentFragment();
     const puffs = [];
     for (let i = 0; i < 7; i++) {
       const puff = puffTemplate.cloneNode(true);
-      puff.style.left = rect.left + 45 + (i % 3) * 14 + 'px';
-      puff.style.top = rect.top + 22 + 'px';
+      puff.style.left = 45 + (i % 3) * 14 + 'px';
+      puff.style.top = '22px';
       fragment.append(puff);
       puffs.push(puff);
     }
-    layer.append(fragment);
+    // Inside the bin, so the smoke rides along with a patrolling bin.
+    bin.append(fragment);
     puffs.forEach((puff, i) => {
       const side = i < 3 ? -1 : 1;
       const animation = puff.animate([
@@ -250,10 +309,13 @@
     shot.sprite.dataset.phase = 'catch';
     setLid(true);
     shot.sprite.classList.add('is-caught');
-    const destination = shot.world.bin;
+    // Reparent into the bin, behind its artwork, so the paper sinks with a moving bin.
+    const { x, y } = shot.ball, catcher = shot.world.bin;
+    shot.sprite.style.transform = `translate3d(${x - catcher.left + MOUTH.left - 28}px,${y - catcher.top + MOUTH.top - 28}px,0)`;
+    bin.prepend(shot.sprite);
     const animation = shot.sprite.animate([
       { transform: shot.sprite.style.transform },
-      { transform: `translate3d(${(destination.left + destination.right) / 2 - 28}px,${destination.top + 58 - 28}px,0) scale(.65)` }
+      { transform: `translate3d(${(MOUTH.left + MOUTH.right) / 2 - 28}px,${MOUTH.top + 58 - 28}px,0) scale(.65)` }
     ], { duration: reducedMotion.matches ? 100 : 300,
       // A very close/fast shot may arrive before the lid finishes opening.
       // Keep it at the lip until the opening is clear instead of drawing it
@@ -299,6 +361,8 @@
     shot.sprite.dataset.phase = 'flight';
     shot.ball = physics.launch(shot.origin, shot.pull, shot.world, 24);
     let last = performance.now(), accumulator = 0;
+    syncClock(shot.world, last);
+    const balls = [shot.ball, ...shot.world.bodies];
     function frame(now) {
       if (active !== shot) return;
       // Keep the simulation in real time. Dropping accumulated time makes the
@@ -307,6 +371,11 @@
       accumulator += (now - last) / 1000;
       last = now;
       while (accumulator >= physics.DT) {
+        for (const ball of balls) {
+          ball.prevX = ball.x;
+          ball.prevY = ball.y;
+          ball.prevAngle = ball.angle;
+        }
         physics.advance(shot.ball, shot.world);
         accumulator -= physics.DT;
         for (const body of shot.world.bodies) {
@@ -319,9 +388,9 @@
           if (member.phase !== 'flight') continue;
           const event = member.ball.event;
           if (event === 'catch') { paint(member); catchBall(member); continue; }
-          // A slow apex is not rest. Let rebounds and transferred momentum finish.
-          const grounded = member.ball.y >= shot.world.floor - member.ball.radius - 2;
-          member.restTime = grounded && Math.hypot(member.ball.vx, member.ball.vy) < 65
+          // Settled anywhere (floor, rim, wedged by the bin) is rest. Gravity of
+          // at least 700 px/s² carries an apex through this band in under .2 s.
+          member.restTime = Math.hypot(member.ball.vx, member.ball.vy) < 65
             ? (member.restTime || 0) + physics.DT : 0;
           if (member.ball.time > 8 || member.restTime > .35) {
             paint(member);
@@ -333,9 +402,10 @@
       const approaching = shot.members.some(member => member.phase === 'catch' || nearBin(member.ball, shot.world.bin));
       setLid(approaching);
       let inFlight = false;
+      const alpha = accumulator / physics.DT;
       for (const member of shot.members) {
         if (member.phase !== 'flight') continue;
-        paint(member);
+        paint(member, alpha);
         inFlight = true;
       }
       if (inFlight) frameId = requestAnimationFrame(frame);
@@ -450,7 +520,7 @@
         if (event.key === 'ArrowRight') active.pull.x -= delta;
         if (event.key === 'ArrowUp') active.pull.y += delta;
         if (event.key === 'ArrowDown') active.pull.y -= delta;
-        const length = Math.hypot(active.pull.x, active.pull.y), max = innerWidth < 600 ? 100 : 140;
+        const length = Math.hypot(active.pull.x, active.pull.y), max = physics.maxPull(active.world.width);
         if (length > max) { active.pull.x *= max / length; active.pull.y *= max / length; }
         updatePull();
       }
@@ -466,6 +536,9 @@
       note.setAttribute('aria-label', note.querySelector('b').textContent + '. Click to crumple this note.');
     });
     score = 0;
+    geometry = null;
+    patrolEpoch = performance.now() / 1000;
+    paintBin(0);
     noteClicked = false;
     hadPaperBalls = false;
     bin.classList.remove('is-visible', 'is-complete');
@@ -474,7 +547,7 @@
     updateHelp();
     label.textContent = 'Aim here';
     finishingRound = false;
-    announce('All clear! Six fresh notes, ready for another round.');
+    announce(`All clear! Six fresh notes, ready for level ${levelIndex + 1}.`);
   }
   async function finishRound() {
     if (finishingRound) return;
@@ -507,6 +580,10 @@
       });
     }
     await new Promise(resolve => setTimeout(resolve, reducedMotion.matches ? 700 : 1400));
+    if (levelIndex === LEVELS.length - 1) {
+      await giveUp();
+      levelIndex = 0;
+    } else levelIndex++;
     const keyboardFocus = notes.includes(document.activeElement);
     resetRound();
     if (!reducedMotion.matches) notes.forEach((note, index) => {
@@ -515,8 +592,21 @@
     });
     if (keyboardFocus) notes[0].focus({ preventScroll: true });
   }
+  function giveUp() {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'game-done';
+    dialog.setAttribute('aria-labelledby', 'game-done-title');
+    dialog.innerHTML = `<form method="dialog">
+      <h2 id="game-done-title">I'm done.</h2>
+      <p>holy shit you're this unemployed? you just like me fr fr. But VYLK app is really nice though. give it a try.</p>
+      <button>OK</button>
+    </form>`;
+    document.body.append(dialog);
+    dialog.showModal();
+    return new Promise(resolve => dialog.addEventListener('close', () => { dialog.remove(); resolve(); }, { once: true }));
+  }
   function geometryChanged(event) {
-    binRect = null;
+    geometry = null;
     cancel(event);
   }
   window.addEventListener('resize', geometryChanged);
