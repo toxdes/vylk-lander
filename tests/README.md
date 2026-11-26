@@ -20,6 +20,9 @@ VYLK_BROWSER=firefox bun tests/arrows.cjs
 bun tests/firefox-arrows.cjs
 bun tests/round.cjs
 bun tests/rebounds.cjs
+bun tests/smoothness.cjs
+bun tests/levels.cjs
+bun tests/performance.cjs
 bun tests/install.cjs
 bun tests/docs.cjs
 python3 -B -m unittest discover -s tests -p 'test_*.py'
@@ -27,11 +30,12 @@ bun tests/api.cjs
 ```
 
 Browser checks require Playwright available to the test runner and Chrome at
-`/usr/bin/google-chrome`. They cover desktop mouse input, mobile touch with 4x
+`/usr/bin/google-chrome`; the game checks also read `CHROME_PATH`. They cover desktop mouse input, mobile touch with 4x
 CPU throttling, arrow rest/hover states, accurate flight without a landing hint, misses,
 keyboard cancellation, ball collisions, bin visibility, and a complete round
 including confetti and automatic reset, floor/wall bank shots, and catches by
-balls knocked loose by another ball. Screenshots are saved under `/tmp`.
+balls knocked loose by another ball, even paper motion on a 90 Hz display,
+and every level through the closing dialog. Screenshots are saved under `/tmp`.
 
 ## Implementation
 

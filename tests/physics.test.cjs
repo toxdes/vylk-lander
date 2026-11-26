@@ -83,7 +83,7 @@ test('two paper balls exchange momentum and separate on contact', () => {
   const a = ball({ x: 200, y: 200, vx: 800, awake: true });
   const b = ball({ x: 240, y: 200, vx: 0, awake: false });
   const momentum = a.vx + b.vx;
-  assert.equal(P.collide(a, b), true);
+  assert.equal(P.collide(a, b, world), true);
   assert.ok(b.awake);
   assert.ok(b.vx > a.vx && a.vx > 0);
   assert.ok(Math.abs(a.vx + b.vx - momentum) < 1e-8);
@@ -157,4 +157,34 @@ test('a secondary ball can score after the launched ball has already retired', (
   assert.ok(P.incoming(primary, scene));
   for (let i = 0; i < 120 && !secondary.retired; i++) P.advance(primary, scene);
   assert.equal(secondary.event, 'catch');
+});
+test('a full pull lifts paper about a screen height on a phone, not a quarter', () => {
+  const phone = { width: 390, floor: 836, gravity: 1055 };
+  const shot = P.launch({ x: 200, y: 700 }, { x: 0, y: P.maxPull(phone.width) }, phone, 24);
+  const rise = shot.vy * shot.vy / (2 * phone.gravity);
+  assert.ok(rise > phone.floor, `rise ${rise.toFixed(0)}px`);
+  assert.ok(rise < 1.5 * phone.floor, `rise ${rise.toFixed(0)}px`);
+});
+test('wide desktop throws keep their original strength', () => {
+  const shot = P.launch({ x: 1000, y: 500 }, { x: 140, y: 0 }, world, 24);
+  assert.ok(Math.abs(shot.vx + 140 * 1440 / 115) < 1e-9);
+});
+test('a bouncier world keeps more speed off the floor', () => {
+  const rebound = bounce => {
+    const shot = ball({ y: world.floor - 25, vy: 600 });
+    P.step(shot, { ...world, bin: null, bounce });
+    return -shot.vy;
+  };
+  assert.ok(rebound(.6) > rebound(0) * 1.4);
+});
+test('a patrolling bin catches where it is now, not where it started', () => {
+  const base = { left: 46, right: 140, top: 874, bottom: 967 };
+  const patrol = { base, range: 600, sweep: 2 };
+  const scene = t => ({ ...world, patrol, time: t, bin: P.binAt(patrol, t), bodies: [] });
+  assert.equal(P.binAt(patrol, 0).left, 46);
+  assert.equal(P.binAt(patrol, 2).left, 646);
+  const drop = x => { const s = scene(1.99); const b = ball({ x, y: 840, vy: 600 });
+    for (let i = 0; i < 12; i++) if (P.advance(b, s) === 'catch') return true; return false; };
+  assert.equal(drop(693), true, 'Mouth has moved to the right end');
+  assert.equal(drop(93), false, 'The starting spot is empty');
 });

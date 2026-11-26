@@ -3,9 +3,15 @@
   'use strict';
   const DT = 1 / 120;
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const maxPull = width => width < 600 ? 100 : 140;
+  // Restitution moves toward perfectly elastic as world.bounce goes from 0 to 1.
+  const springy = (e, world) => e + (1 - e) * (world.bounce || 0);
 
   function launch(origin, pull, world, radius) {
-    const gain = Math.max(7, world.width / 115);
+    // A full pull lifts paper about 1.2 floors on any screen shape; wide screens
+    // keep their stronger throw.
+    const reach = Math.sqrt(2.4 * world.gravity * world.floor) / maxPull(world.width);
+    const gain = Math.max(world.width / 115, reach) * (world.power || 1);
     return { x: origin.x + pull.x, y: origin.y + pull.y,
       vx: -pull.x * gain, vy: -pull.y * gain, radius,
       angle: 0, spin: -pull.x * 2, time: 0, bounces: 0 };
@@ -54,7 +60,7 @@
         if (sideY >= bin.top && sideY <= bin.bottom) {
           ball.x = sideX;
           ball.y = sideY;
-          ball.vx *= -.5;
+          ball.vx *= -springy(.5, world);
           event = 'rim';
         }
       }
@@ -64,7 +70,7 @@
         if (bottomX >= bin.left && bottomX <= bin.right) {
           ball.x = bottomX;
           ball.y = bin.bottom + r;
-          ball.vy *= -.5;
+          ball.vy *= -springy(.5, world);
           event = 'rim';
         }
       }
@@ -80,27 +86,28 @@
         ball.y += ny * (r - distance);
         const normalSpeed = ball.vx * nx + ball.vy * ny;
         if (normalSpeed < 0) {
-          ball.vx -= 1.5 * normalSpeed * nx;
-          ball.vy -= 1.5 * normalSpeed * ny;
+          const kick = 1 + springy(.5, world);
+          ball.vx -= kick * normalSpeed * nx;
+          ball.vy -= kick * normalSpeed * ny;
           event = 'rim';
         }
       }
     }
     if (ball.x < r || ball.x > world.width - r) {
       ball.x = clamp(ball.x, r, world.width - r);
-      ball.vx = -ball.vx * 0.62;
+      ball.vx = -ball.vx * springy(.62, world);
       ball.spin *= -0.7;
       event = 'wall';
     }
     if (ball.y < r) {
       ball.y = r;
-      ball.vy = Math.abs(ball.vy) * 0.45;
+      ball.vy = Math.abs(ball.vy) * springy(.45, world);
       event = 'ceiling';
     }
     if (ball.y >= world.floor - r && ball.vy > 0) {
       ball.y = world.floor - r;
-      ball.vy *= -0.48;
-      ball.vx *= 0.74;
+      ball.vy *= -springy(.48, world);
+      ball.vx *= springy(.74, world);
       ball.spin = ball.vx * 1.5;
       event = 'floor';
     }
@@ -120,7 +127,7 @@
     points.push({ x: ball.x, y: ball.y });
     return { points, end: ball, event };
   }
-  function collide(a, b) {
+  function collide(a, b, world) {
     const dx = b.x - a.x, dy = b.y - a.y;
     const distance = Math.hypot(dx, dy), diameter = a.radius + b.radius;
     if (distance >= diameter) return false;
@@ -128,7 +135,7 @@
     const closing = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
     if (closing >= 0) return false;
     // Equal paper masses, inelastic contact. Momentum transfers to both balls.
-    const impulse = -(1 + .62) * closing / 2;
+    const impulse = -(1 + springy(.62, world)) * closing / 2;
     a.vx -= impulse * nx; a.vy -= impulse * ny;
     b.vx += impulse * nx; b.vy += impulse * ny;
     const separation = (diameter - distance + .01) / 2;
@@ -140,7 +147,19 @@
     a.bounces++; b.bounces++;
     return true;
   }
+  // A patrolling bin eases between base and base + range, one sweep per
+  // `sweep` seconds. Being a pure function of time keeps the drawn bin, the
+  // live simulation, and the lid forecast on one clock.
+  function binAt(patrol, time) {
+    const shift = patrol.range * (1 - Math.cos(Math.PI * time / patrol.sweep)) / 2;
+    const b = patrol.base;
+    return { left: b.left + shift, right: b.right + shift, top: b.top, bottom: b.bottom, shift };
+  }
   function advance(primary, world) {
+    if (world.patrol) {
+      world.time += DT;
+      world.bin = binAt(world.patrol, world.time);
+    }
     const balls = [primary, ...(world.bodies || [])];
     for (const ball of balls) {
       ball.event = null;
@@ -151,7 +170,7 @@
     for (let i = 0; i < balls.length; i++) for (let j = i + 1; j < balls.length; j++) {
       const a = balls[i], b = balls[j];
       if (a.retired || b.retired || (!a.awake && !b.awake && a !== primary)) continue;
-      if (collide(a, b)) {
+      if (collide(a, b, world)) {
         if (!a.event) a.event = 'ball';
         if (!b.event) b.event = 'ball';
       }
@@ -169,7 +188,7 @@
     }
     return false;
   }
-  const api = { DT, launch, step, advance, collide, predict, incoming, clamp };
+  const api = { DT, maxPull, launch, step, advance, collide, binAt, predict, incoming, clamp };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.PaperPhysics = api;
 })(typeof window === 'undefined' ? globalThis : window);

@@ -92,8 +92,10 @@ a:is(:hover, :focus-visible) .arrow-shaft { opacity: 1; }
   z-index: 4;
   will-change: transform;
 }
-.flying-paper.is-caught { z-index: 2; }
-.flying-paper .paper-drawing { filter: none; }
+/* Caught paper is reparented into the bin, before its artwork, so it sinks behind it. */
+.flying-paper.is-caught { z-index: auto; }
+/* Own layer: spin is composited instead of re-rasterizing the drawing each frame. */
+.flying-paper .paper-drawing { filter: none; will-change: transform; }
 .game-guide { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; }
 .game-guide.is-visible { opacity: 1; }
 .game-tether { position: absolute; left: 0; top: 0; width: 1px; height: 1.5px; background: #ae2448; opacity: .25; transform-origin: 0 50%; }
@@ -108,6 +110,7 @@ a:is(:hover, :focus-visible) .arrow-shaft { opacity: 1; }
   height: 160px;
   z-index: 3;
   visibility: hidden;
+  will-change: transform;
 }
 .game-bin.is-visible { visibility: visible; }
 .bin-art { position: absolute; inset: 0; transform-origin: 50% 100%; }
@@ -142,6 +145,33 @@ a:is(:hover, :focus-visible) .arrow-shaft { opacity: 1; }
   pointer-events: none;
   user-select: none;
 }
+.game-done {
+  width: min(calc(100% - 32px), 420px);
+  padding: 28px 28px 24px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.game-done::backdrop { background: rgb(21 23 25 / 45%); }
+.game-done h2 { margin: 0 0 10px; font: 600 34px/1.1 Caveat, cursive; color: var(--red); }
+.game-done p { margin: 0 0 22px; font-size: 16px; line-height: 1.6; }
+.game-done form { display: flex; flex-direction: column; }
+.game-done button {
+  align-self: flex-end;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--red);
+  color: #fff;
+  font: 500 15px/1 Rubik, sans-serif;
+  cursor: pointer;
+}
+.game-done button:hover { background: var(--red-dark); }
+.game-done button:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+.note-invitation .invite-accent { color: var(--red); }
 .game-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @keyframes bin-arrive {
   from { opacity: 0; transform: translate(-25px, 60px) rotate(-12deg); }
