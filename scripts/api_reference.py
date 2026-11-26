@@ -11,6 +11,7 @@ import re
 from html import escape
 
 import docs_markdown
+import docs_pages
 
 METHODS = {"get", "post", "patch", "delete", "put", "head", "options"}
 
@@ -372,28 +373,29 @@ def overview(spec, objects):
     )
 
 
-def render_reference(spec, template, preview=False):
+def render_reference(spec, template, nav, preview=False):
     objects = set()
-    toc = '<a href="#overview">Overview</a><a href="client-protocol.html">Client protocol guide</a>'
+    sections = [("overview", "Overview", 1)]
     content = (
-        '<section class="docs-hero"><h1>HTTP API reference</h1>'
+        f'<section class="docs-hero"><h1>{escape(docs_pages.API_REFERENCE_TITLE)}</h1>'
         f'<p>Every route of the vylk server, with its headers, parameters, body, responses, and an example. Read the <a href="client-protocol.html">client protocol guide</a> before you build offline sync or encryption.</p>'
         '<p><a href="openapi.json" download>Download the OpenAPI specification</a></p></section>'
     )
     content += overview(spec, objects)
     for tag in spec["tags"]:
         anchor = "group-" + docs_markdown.anchor(tag["name"])
-        toc += f'<p><a href="#{anchor}">{escape(tag["name"])}</a></p>'
+        sections.append((anchor, tag["name"], 1))
         content += f'<section id="{anchor}" class="api-group"><h2>{escape(tag["name"])}</h2>{paragraph(tag.get("description", ""))}</section>'
         for path, item in spec["paths"].items():
             for method, operation in item.items():
                 if operation["tags"][0] == tag["name"]:
-                    toc += f'<a href="#{operation["operationId"]}">{escape(operation["summary"])}</a>'
+                    sections.append((operation["operationId"], operation["summary"], 2))
                     content += operation_content(spec, path, method, operation, objects)
     body = objects_content(spec, objects)
-    toc += '<p><a href="#objects">Objects</a></p>'
+    sections.append(("objects", "Objects", 1))
     content += '<section id="objects" class="api-group"><h2>Objects</h2><p>Objects that appear in the request and response tables above.</p></section>' + body
-    return page(template, "HTTP API reference", content, toc, spec["info"]["version"], preview)
+    toc = docs_pages.sidebar(nav, "api/index.html", sections)
+    return page(template, docs_pages.API_REFERENCE_TITLE, content, toc, spec["info"]["version"], preview)
 
 
 def page(template, title, content, toc, version, preview, current="page"):
@@ -412,14 +414,14 @@ def page(template, title, content, toc, version, preview, current="page"):
     return template
 
 
-def render_guide(guide, spec, template, preview=False):
+def render_guide(guide, spec, template, nav, preview=False):
     document = docs_markdown.render(guide)
-    toc = "".join(f'<a href="#{anchor}">{escape(text)}</a>' for anchor, text in document.toc)
+    sections = [(anchor, text, 1) for anchor, text in document.toc]
     return page(
         template,
         document.title,
         document.content,
-        '<a href="index.html">API reference</a>' + toc,
+        docs_pages.sidebar(nav, "api/client-protocol.html", sections),
         spec["info"]["version"],
         preview,
         current="location",

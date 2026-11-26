@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 
 from announcements import releases_for_version, render_announcements
 from api_reference import render_guide, render_reference, validate_specification
-from docs_pages import PAGES, render_pages
+from docs_pages import PAGES, navigation, render_pages
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION_PATTERN = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
@@ -107,11 +107,13 @@ def build():
     history = release_descriptions()
     announcements_html = render_announcements(history, version, announcements_template)
     latest_tag = releases_for_version(history, version)[0].tag
+    nav = navigation(sources, guide)
     docs_html = render_pages(
         sources,
         (ROOT / "scripts/docs-template.html").read_text(),
         version,
         "main" if preview else f"v{version}",
+        nav,
         preview,
     )
     # Acquire and validate everything before replacing the last successful build.
@@ -137,9 +139,9 @@ def build():
         api.mkdir(exist_ok=True)
         (api / "openapi.json").write_text(json.dumps(spec, indent=2) + "\n")
         (api / "client-protocol.md").write_text(guide)
-        (api / "index.html").write_text(render_reference(spec, template, preview))
+        (api / "index.html").write_text(render_reference(spec, template, nav, preview))
         (api / "client-protocol.html").write_text(
-            render_guide(guide, spec, template, preview)
+            render_guide(guide, spec, template, nav, preview)
         )
         (output / "version.js").write_text(f'window.VYLK_VERSION = "{version}";\n')
         for file in output.rglob("*"):

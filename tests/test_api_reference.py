@@ -103,6 +103,7 @@ SPEC = {
 }
 GUIDE = "# Client guide\n\nUse `session` cookies.\n\n## Sync\n\nNever discard pending edits.\n"
 TEMPLATE = (build.ROOT / "scripts/api-template.html").read_text()
+NAV = [("index.html", "Getting started"), ("api/index.html", "HTTP API reference"), ("api/client-protocol.html", "Client guide")]
 
 
 class ReferenceTests(unittest.TestCase):
@@ -120,7 +121,7 @@ class ReferenceTests(unittest.TestCase):
             api_reference.validate_specification(broken)
 
     def test_reference_has_all_subsections_and_resolving_anchors(self):
-        html = api_reference.render_reference(SPEC, TEMPLATE)
+        html = api_reference.render_reference(SPEC, TEMPLATE, NAV)
         for section in (
             "Request headers",
             "Path parameters",
@@ -146,7 +147,7 @@ class ReferenceTests(unittest.TestCase):
         self.assertNotIn("{{", html)
 
     def test_tables_and_examples_follow_the_specification(self):
-        html = api_reference.render_reference(SPEC, TEMPLATE)
+        html = api_reference.render_reference(SPEC, TEMPLATE, NAV)
         self.assertIn("<th scope=\"col\">Key</th><th scope=\"col\">Value</th><th scope=\"col\">Description</th>", html)
         self.assertIn("<td><code>title</code></td><td>string, required</td>", html)
         self.assertIn("<td><code>X-Vylk-Vault-Protocol</code></td><td><code>1</code></td>", html)
@@ -158,7 +159,7 @@ class ReferenceTests(unittest.TestCase):
 
     def test_guide_escapes_html_and_rejects_unsafe_links(self):
         html = api_reference.render_guide(
-            GUIDE + "\n<script>bad()</script>\n", SPEC, TEMPLATE
+            GUIDE + "\n<script>bad()</script>\n", SPEC, TEMPLATE, NAV
         )
         self.assertIn("&lt;script&gt;", html)
         self.assertIn("<code>session</code>", html)
@@ -166,22 +167,22 @@ class ReferenceTests(unittest.TestCase):
             docs_markdown.inline("[bad](javascript:alert)")
         with self.assertRaises(ValueError):
             api_reference.render_guide(
-                GUIDE + "\n> unsupported quote\n", SPEC, TEMPLATE
+                GUIDE + "\n> unsupported quote\n", SPEC, TEMPLATE, NAV
             )
 
     def test_preview_is_explicit(self):
         self.assertIn(
-            "Local preview", api_reference.render_reference(SPEC, TEMPLATE, True)
+            "Local preview", api_reference.render_reference(SPEC, TEMPLATE, NAV, True)
         )
         self.assertNotIn(
-            "Local preview", api_reference.render_reference(SPEC, TEMPLATE, False)
+            "Local preview", api_reference.render_reference(SPEC, TEMPLATE, NAV, False)
         )
 
     def test_guide_lists_and_fenced_code(self):
         html = api_reference.render_guide(
             GUIDE + '\n- One\n- Two\n\n1. First\n2. Second\n\n```json\n{"a":1}\n```\n',
             SPEC,
-            TEMPLATE,
+            TEMPLATE, NAV,
         )
         self.assertIn("<ul><li>One</li><li>Two</li></ul>", html)
         self.assertIn("<ol><li>First</li><li>Second</li></ol>", html)

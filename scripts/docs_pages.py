@@ -17,6 +17,7 @@ PAGES = (
 )
 PUBLISHED = {source: output for source, output, _ in PAGES}
 PUBLISHED.update({"api/README.md": "api/index.html", "api/client-protocol.md": "api/client-protocol.html"})
+API_REFERENCE_TITLE = "HTTP API reference"
 SOURCE_URL = "https://github.com/toxdes/vylk/blob"
 
 # Section anchors of the former single-page docs. Released apps and READMEs link to them.
@@ -77,24 +78,41 @@ def check_links(pages):
                 raise ValueError(f"{output} links to a missing anchor: {href}")
 
 
-def render_pages(sources, template, version, tag, preview=False):
+def navigation(sources, guide):
+    """Every documentation page in sidebar order, as (path under /docs/, title)."""
+    return [(output, docs_markdown.render(sources[source]).title) for source, output, _ in PAGES] + [
+        ("api/index.html", API_REFERENCE_TITLE),
+        ("api/client-protocol.html", docs_markdown.render(guide).title),
+    ]
+
+
+def sidebar(nav, current, sections):
+    """Link every page relative to `current`, which also lists its (anchor, text, depth) sections."""
+    here = posixpath.dirname(current) or "."
+    html = ""
+    for output, title in nav:
+        mark = ' aria-current="page"' if output == current else ""
+        html += f'<a href="{escape(posixpath.relpath(output, here), quote=True)}"{mark}>{escape(title)}</a>'
+        if output == current:
+            html += "".join(
+                f'<a class="toc-section{" toc-subsection" if depth > 1 else ""}" href="#{escape(anchor, quote=True)}">{escape(text)}</a>'
+                for anchor, text, depth in sections
+            )
+    return html
+
+
+def render_pages(sources, template, version, tag, nav, preview=False):
     """Return {published file: HTML}. `sources` maps docs/ file names to Markdown."""
     link = link_mapper(tag)
     documents = {output: docs_markdown.render(sources[source].replace("__VYLK_VERSION__", version), link) for source, output, _ in PAGES}
     pages = {}
     for source, output, description in PAGES:
         document = documents[output]
-        toc = ""
-        for _, other, _ in PAGES:
-            current = ' aria-current="page"' if other == output else ""
-            toc += f'<a href="{other}"{current}>{escape(documents[other].title)}</a>'
-            if other == output:
-                toc += "".join(f'<a class="toc-section" href="#{anchor}">{escape(text)}</a>' for anchor, text in document.toc)
         values = {
             "TITLE": escape(document.title),
             "DESCRIPTION": escape(description, quote=True),
             "HEAD": legacy_redirect() if output == "index.html" else "",
-            "TOC": toc,
+            "TOC": sidebar(nav, output, [(anchor, text, 1) for anchor, text in document.toc]),
             "CONTENT": document.content,
             "VERSION": escape(version),
             "PREVIEW": " · Local preview" if preview else "",
