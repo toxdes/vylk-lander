@@ -30,6 +30,7 @@ LEGACY_ANCHORS = {
     "security": "how-to.html#keep-your-notes-safe",
     "remote": "how-to.html#use-other-devices",
     "config": "cli-reference.html#environment-variables",
+    "ai-assist": "how-to.html#ai-assist",
     "build": "https://github.com/toxdes/vylk/blob/main/docs/development.md",
 }
 

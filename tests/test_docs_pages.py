@@ -13,7 +13,7 @@ TEMPLATE = (Path(__file__).resolve().parents[1] / "scripts/docs-template.html").
 # Headings that docs_pages.LEGACY_ANCHORS redirects to.
 LEGACY_HEADINGS = {
     "getting-started.md": ["Install vylk"],
-    "how-to.md": ["Write and organize", "Use other devices", "Keep your notes safe"],
+    "how-to.md": ["Write and organize", "AI Assist", "Use other devices", "Keep your notes safe"],
     "concepts.md": ["Saving and sync"],
     "cli-reference.md": ["Environment variables"],
 }
@@ -70,7 +70,7 @@ class PageTests(unittest.TestCase):
         self.assertEqual(link("#local"), "#local")
 
     def test_pages_render_with_navigation_version_and_legacy_redirect(self):
-        pages = render(sources(**{"how-to.md": "# How-to guides\n\n## Write and organize\n\n## Use other devices\n\n## Keep your notes safe\n\nUse `__VYLK_VERSION__`.\n"}))
+        pages = render(sources(**{"how-to.md": "# How-to guides\n\n## Write and organize\n\n## AI Assist\n\n## Use other devices\n\n## Keep your notes safe\n\nUse `__VYLK_VERSION__`.\n"}))
         self.assertEqual(set(pages), {output for _, output, _ in docs_pages.PAGES})
         self.assertIn("<code>1.2.3</code>", pages["how-to.html"])
         self.assertIn('<a href="how-to.html" aria-current="page">How-to guides</a>', pages["how-to.html"])
