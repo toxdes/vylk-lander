@@ -26,7 +26,7 @@ A quiet place to keep the useful bits close.
 
 **A thought worth keeping.**
 
-Follow [a useful link](https://vylk.toxdes.com) and leave a little room to think.
+Follow [a useful link](https://vylk.app) and leave a little room to think.
 
 ## A few good things
 
